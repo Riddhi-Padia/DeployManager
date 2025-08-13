@@ -1,0 +1,13 @@
+<mat-list>
+  <mat-list-item [routerLink]="[ '/task-list' ]" routerLinkActive="active">
+    <span matListItemTitle appGlowTrack>Deployments</span>
+    <span>Review your deployments</span>
+  </mat-list-item>
+  <mat-list-item [routerLink]="[ '/configuration' ]" routerLinkActive="active">
+    <span matListItemTitle>Configuration</span>
+    <span>Manage settings</span>
+  </mat-list-item>
+  <mat-list-item (click)="logOut()">
+    <span matListItemTitle>Logout</span>
+  </mat-list-item>
+</mat-list>

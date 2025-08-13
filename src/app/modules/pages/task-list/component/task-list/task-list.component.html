@@ -1,0 +1,5 @@
+<app-table [data]="dataSource" [columns]="columns" (edit)="editRow($event)" (delete)="deleteTask($event)">
+    <div extra-content>
+        <button mat-mini-fab class="mt-1" (click)="addTask()"><mat-icon>add</mat-icon></button>
+    </div>
+</app-table>

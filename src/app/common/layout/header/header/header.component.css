@@ -1,0 +1,15 @@
+.example-icon {
+    border: 0px;
+    background-color: transparent;
+  }
+
+.header-title{
+    margin-left:20px;
+    font-size: 1.7rem;
+    font-weight: bolder;
+    color: #483AA0;
+}
+
+mat-toolbar{
+    border-bottom:1px solid grey ;
+}

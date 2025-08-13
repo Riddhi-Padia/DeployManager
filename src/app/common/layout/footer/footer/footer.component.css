@@ -1,0 +1,12 @@
+.footer{
+    font-size: 16px;
+    color: rgb(48, 48, 48);
+    vertical-align: bottom;
+    text-align: end;
+    width: 100%;
+}
+
+mat-toolbar{
+    border-top: 1px solid grey;
+    height: 40px;
+}

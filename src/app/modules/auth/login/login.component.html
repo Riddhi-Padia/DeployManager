@@ -1,0 +1,22 @@
+<mat-card class="login-card">
+  <span class="d-flex justify-content-center"><h2>Welcome back!</h2></span>
+    <p>Please login to check your task list</p>
+  
+    <form [formGroup]="loginForm" (submit)="onSubmit()">
+      <mat-form-field appearance="outline">
+        <mat-label>Username:</mat-label>
+        <input matInput formControlName="username"  />
+        <mat-error *ngIf="loginForm.get('username')?.errors?.['required']">Username is required</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline">
+          <mat-label>Password:</mat-label>
+          <input matInput type="password" formControlName="password"  />
+          <mat-error *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</mat-error>
+          <mat-error *ngIf="loginForm.get('password')?.errors?.['minlength']">Password is invalid</mat-error>
+      </mat-form-field>
+  
+      <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid" appGlowTrack>Login</button>
+    </form>
+  </mat-card>
+  
