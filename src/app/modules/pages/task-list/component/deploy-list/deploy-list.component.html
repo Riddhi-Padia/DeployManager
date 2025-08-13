@@ -1,0 +1,99 @@
+<div class="deploy-list-container">
+  <div class="page-header">
+    <h2 class="page-title">
+      <mat-icon class="title-icon">rocket_launch</mat-icon>
+      Deployment Pipelines
+    </h2>
+    <p class="fs-5">Monitor and manage your deployment pipelines</p>
+  </div>
+
+  <div class="deployment-table-wrapper">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <mat-form-field appearance="outline" class="w-25">
+        <mat-label>Search</mat-label>
+        <input matInput (keyup)="applyFilter($event)" #input>
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="addDeployment()" class="add-deployment-btn">
+        <mat-icon>add</mat-icon>
+        New Deployment
+      </button>
+    </div>
+
+    <table mat-table [dataSource]="filteredDataSource" class="mat-elevation-z8" matSort>
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+        <td mat-cell *matCellDef="let element">
+          <div class="pipeline-name">
+            <mat-icon class="pipeline-icon">device_hub</mat-icon>
+            <span class="name-text">{{ element.name }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Latest execution status</th>
+        <td mat-cell *matCellDef="let element">
+          <mat-chip [ngClass]="'status-chip ' + getStatusClass(element.status)">
+            {{ element.status }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Source Revisions Column -->
+      <ng-container matColumnDef="sourceRevisions">
+        <th mat-header-cell *matHeaderCellDef>Latest source revisions</th>
+        <td mat-cell *matCellDef="let element">
+          <span class="revision-text">{{ element.sourceRevisions || '-' }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Execution Started Column -->
+      <ng-container matColumnDef="executionStarted">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Latest execution started</th>
+        <td mat-cell *matCellDef="let element">
+          <span class="time-info">
+            {{ formatTime(element.executionStarted) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Recent Executions Column -->
+      <ng-container matColumnDef="recentExecutions">
+        <th mat-header-cell *matHeaderCellDef>Most recent executions</th>
+        <td mat-cell *matCellDef="let element">
+          <div class="recent-executions">
+            <ng-container *ngFor="let exec of element.recentExecutions">
+              <span
+                class="execution-indicator status-{{exec.status}}"
+                matTooltip="{{exec.tooltip}}"
+              >
+                <mat-icon>{{ getExecutionIcon(exec.status) }}</mat-icon>
+              </span>
+            </ng-container>
+            <a class="view-btn ms-2" matTooltip="View details" href="#">
+              View details
+            </a>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell empty-data" [attr.colspan]="displayedColumns.length">
+          No data matching the filter "{{input.value}}"
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading deployments...</p>
+  </div>
+</div>

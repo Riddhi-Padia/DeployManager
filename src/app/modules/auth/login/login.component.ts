@@ -36,7 +36,7 @@ export class LoginComponent {
     if(this.loginForm.valid){
       this.authService.login(this.loginForm.value).subscribe({
         next: () => {
-          this.router.navigate(['/task-list']);
+          this.router.navigate(['/deploy-list']);
         },
         error: () => {
           this.snackbar.open('Invalid username or password','close',{

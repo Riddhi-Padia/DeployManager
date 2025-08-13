@@ -11,7 +11,7 @@ export const loginGuard: CanActivateFn = () => {
     tap({
       next: (isLoggedIn) => {
         if (isLoggedIn) {
-          router.navigate(['/task-list']);
+          router.navigate(['/deploy-list']);
         }
       },
     }),
