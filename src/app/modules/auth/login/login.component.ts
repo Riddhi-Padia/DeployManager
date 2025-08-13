@@ -7,7 +7,6 @@ import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../../../common/services/auth.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { GlowTrackDirective } from '../../../common/directives/glow-track.directive';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +18,6 @@ import { GlowTrackDirective } from '../../../common/directives/glow-track.direct
     MatButtonModule,
     MatInputModule,
     MatSnackBarModule,
-    GlowTrackDirective
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',

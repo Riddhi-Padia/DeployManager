@@ -1,11 +1,12 @@
 /* Header styling */
 .addDeploy{
-  border: 1px solid lightgray;
+  margin-top: 1rem !important;
   border-radius: 10px;
+  border : 1px solid #7965C1;
 }
 
 .form-header {
-  color: #7965C1;
+  color: #7965c1;
   border-bottom: 1px solid #7965C1;
   padding: 24px;
   border-radius: 12px 12px 0 0;

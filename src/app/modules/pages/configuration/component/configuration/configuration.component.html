@@ -1,16 +1,136 @@
-<div class="configuration-container">
-  <h3>Profile configuration</h3>
-  <!-- add 3 input fields-->
-  <mat-form-field appearance="fill">
-    <mat-label>Key ID</mat-label>
-    <input matInput placeholder="Enter Key Id" [(ngModel)]="KeyId">
-  </mat-form-field>
-  <mat-form-field appearance="fill">
-    <mat-label>Secret Key</mat-label>
-    <input matInput placeholder="Enter Secret Key" [(ngModel)]="SecretKey">
-  </mat-form-field>
-  <mat-form-field appearance="fill">
-    <mat-label>Session Token</mat-label>
-    <input matInput placeholder="Enter Session Token" [(ngModel)]="SessionToken">
-  </mat-form-field>
-</div>
+<mat-card class="profile-config-card w-100">
+  <mat-card-header class="config-header">
+    <mat-card-title class="d-flex align-items-center gap-2 m-0 fw-bold">
+      <mat-icon>account_circle</mat-icon>
+      Profile Configuration
+    </mat-card-title>
+    <mat-card-subtitle class="text-muted">Manage your AWS credentials and session settings</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content class="p-4">
+    <form #profileForm="ngForm" class="w-100">
+      <!-- Status indicator -->
+      <div class="status-indicator" [ngClass]="getStatusClass()">
+        <mat-icon>{{ getStatusIcon() }}</mat-icon>
+        <span>{{ getStatusMessage() }}</span>
+      </div>
+
+      <!-- Configuration Fields -->
+      <div class="form-fields">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Access Key ID</mat-label>
+          <input
+            matInput
+            placeholder="Enter your AWS Access Key ID"
+            [(ngModel)]="KeyId"
+            name="keyId"
+            [disabled]="!isEditing"
+            required
+            #keyIdInput="ngModel"
+          >
+          <mat-icon matPrefix>vpn_key</mat-icon>
+          <mat-hint>Your AWS Access Key ID for authentication</mat-hint>
+          <mat-error *ngIf="keyIdInput.invalid && keyIdInput.touched">
+            Access Key ID is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Secret Access Key</mat-label>
+          <input
+            matInput
+            [type]="hideSecretKey ? 'password' : 'text'"
+            placeholder="Enter your AWS Secret Access Key"
+            [(ngModel)]="SecretKey"
+            name="secretKey"
+            [disabled]="!isEditing"
+            required
+            #secretKeyInput="ngModel"
+          >
+          <mat-icon matPrefix>security</mat-icon>
+          <button
+            mat-icon-button
+            matSuffix
+            (click)="hideSecretKey = !hideSecretKey"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hideSecretKey"
+            type="button"
+          >
+            <mat-icon>{{hideSecretKey ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+          <mat-hint>Your AWS Secret Access Key (keep this secure)</mat-hint>
+          <mat-error *ngIf="secretKeyInput.invalid && secretKeyInput.touched">
+            Secret Access Key is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Session Token</mat-label>
+          <textarea
+            matInput
+            placeholder="Enter your AWS Session Token (optional)"
+            [(ngModel)]="SessionToken"
+            name="sessionToken"
+            [disabled]="!isEditing"
+            rows="3"
+            #sessionTokenInput="ngModel"
+          ></textarea>
+          <mat-icon matPrefix>token</mat-icon>
+          <mat-hint>Session token for temporary credentials (optional)</mat-hint>
+        </mat-form-field>
+    </div>
+    </form>
+  </mat-card-content>
+
+  <!-- Action Buttons -->
+  <mat-card-actions class="p-4" style="border-top: 1px solid lightgray;">
+    <div class="d-flex justify-content-start align-items-center flex-wrap gap-3">
+      <!-- Edit Mode Buttons -->
+      <ng-container *ngIf="!isEditing">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="enableEdit()"
+          class="edit-button"
+        >
+          <mat-icon>edit</mat-icon>
+          Edit Configuration
+        </button>
+
+        <button
+          mat-stroked-button
+          (click)="testConnection()"
+          class="test-button"
+          [disabled]="!isConfigurationValid()"
+        >
+          <mat-icon>wifi_protected_setup</mat-icon>
+          Test Connection
+        </button>
+      </ng-container>
+
+      <!-- Save Mode Buttons -->
+      <ng-container *ngIf="isEditing">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="saveConfiguration()"
+          class="save-button"
+          [disabled]="!profileForm.form.valid"
+        >
+          <mat-icon>save</mat-icon>
+          Save Configuration
+        </button>
+
+        <button
+          mat-stroked-button
+          color="accent"
+          (click)="cancelEdit()"
+          class="cancel-button"
+        >
+          <mat-icon>cancel</mat-icon>
+          Cancel
+        </button>
+      </ng-container>
+    </div>
+  </mat-card-actions>
+</mat-card>

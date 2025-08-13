@@ -1,262 +1,204 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
-import { ConfigurationService } from '../../services/configuration.service';
-import { dropdownItem } from '../../models/dropdown-item/dropdown-item';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-configuration',
-  imports: [CommonModule, MatIconModule,FormsModule, MatFormFieldModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatExpansionModule,
+    MatChipsModule
+  ],
   templateUrl: './configuration.component.html',
-  styleUrl: './configuration.component.css'
+  styleUrls: ['./configuration.component.css']
 })
-export class ConfigurationComponent implements OnInit{
+export class ConfigurationComponent {
+  // Form fields
+  KeyId: string = '';
+  SecretKey: string = '';
+  SessionToken: string = '';
+  profileName: string = 'dev-root';
 
-  KeyId = 0;
-  SecretKey = "";
-  SessionToken = "";
+  // Form state
+  isEditing: boolean = false;
+  hideSecretKey: boolean = true;
+  statusMessage: string = '';
+  statusType: 'success' | 'error' | 'warning' | 'info' = 'info';
 
-  status!: dropdownItem[];
-  types!: dropdownItem[];
-  priority!: dropdownItem[];
-  statusEditMode = false;
-  typesEditMode = false;
-  priorityEditMode = false;
-  isSubmittedStatus = false;
-  isSubmittedType = false;
-  isSubmittedPriority = false;
-  maxStatusId!: string;
-  maxTypeId!: string;
-  maxPriorityId!: string;
+  // Original values for cancel functionality
+  private originalValues: any = {};
 
-  constructor(private configurationService: ConfigurationService, private snackbar: MatSnackBar){}
+  // AWS Regions
+  awsRegions = [
+    { code: 'us-east-1', name: 'US East (N. Virginia)' },
+    { code: 'ap-south-1', name: 'Asia Pacific (Mumbai)' }
+  ];
 
-  ngOnInit(): void {
-    this.configurationService.getAllTaskStatus().subscribe((status)=> {
-      this.maxStatusId = status.length > 0 ? Math.max(...status.map(res => Number(res.id))).toString() : '1211';
-      this.status = status;
-    });
-
-    this.configurationService.getAllTaskPriority().subscribe((priority)=>{
-      this.priority = priority;
-    });
-
-    this.configurationService.getAllTaskTypes().subscribe((type)=>{
-      this.types = type;
-    });
-
-    this.isSubmittedStatus = false;
-    this.isSubmittedType = false;
-    this.isSubmittedPriority = false;
-    this.statusEditMode = false;
-    this.typesEditMode = false;
-    this.priorityEditMode = false;
+  constructor() {
+    // Initialize with some demo data
+    this.loadConfiguration();
   }
 
-  closeStatusEdit(): void{
-    this.ngOnInit();
+  // Enable edit mode
+  enableEdit(): void {
+    this.isEditing = true;
+    this.storeOriginalValues();
+    this.clearStatus();
   }
 
-  addStatus(): void{
-    if(!this.status.some(res=>res.id == "")){
-      this.status.push({id: '', value:''});
+  // Save configuration
+  saveConfiguration(): void {
+    if (!this.isConfigurationValid()) {
+      this.setStatus('Please fill in all required fields', 'error');
+      return;
     }
+
+    // Simulate API call
+    setTimeout(() => {
+      this.isEditing = false;
+      this.setStatus('Configuration saved successfully', 'success');
+
+      // Store in localStorage for demo purposes
+      this.storeConfiguration();
+    }, 1000);
   }
 
-  addType(): void{
-    if(!this.types.some(temp=>temp.id == "")){
-      this.types.push({id:'',value:''});
+  // Cancel edit mode
+  cancelEdit(): void {
+    this.restoreOriginalValues();
+    this.isEditing = false;
+    this.clearStatus();
+  }
+
+  // Clear all form fields
+  clearForm(): void {
+    this.KeyId = '';
+    this.SecretKey = '';
+    this.SessionToken = '';
+    this.setStatus('Form cleared', 'info');
+  }
+
+  // Test connection
+  testConnection(): void {
+    if (!this.isConfigurationValid()) {
+      this.setStatus('Please configure valid credentials first', 'warning');
+      return;
     }
-  }
 
-  addPriority(): void{
-    this.priority.push({id:'',value:''});
-  }
+    this.setStatus('Testing connection...', 'info');
+    console.log(this.statusMessage);
 
-
-  saveStatus(){
-    this.isSubmittedStatus = true;
-    if(!this.status.some(status => !status.value.trim())){
-      this.status.forEach((item)=>{
-        if(item.id == ''){
-          item.id = (+this.maxStatusId + 1).toString();
-          this.configurationService.addTaskStatus(item).subscribe(newStatus => {
-            item.id = newStatus.id;
-            this.maxStatusId = newStatus.id;
-          });
-        }
-        else{
-          this.configurationService.updateTaskStatus(item).subscribe({
-            next: () => {
-              this.snackbar.open('Status updated successfully', 'Close', {
-                duration: 3000,
-                panelClass: ['green-popup'],
-                horizontalPosition: 'end',
-                verticalPosition: 'top'
-              });
-              this.ngOnInit(); // Refresh data after delete
-            },
-            error: () => {
-              this.snackbar.open('Error updates status', 'Close', {
-                duration: 3000,
-                panelClass: ['error-popup'],
-                horizontalPosition: 'end',
-                verticalPosition: 'top'
-              });
-            }
-          });
-        }
-      });
-    }
-  }
-
-
-  saveType(){
-    this.isSubmittedType = true;
-    if(!this.types.some(type => !type.value.trim())){
-      this.types.forEach((item)=>{
-        if(item.id == ''){
-          item.id = (+this.maxTypeId + 1).toString();
-          this.configurationService.addTaskType(item).subscribe(newStatus => {
-            item.id = newStatus.id;
-            this.maxStatusId = newStatus.id;
-          });
-        }
-        else{
-          this.configurationService.updateTaskType(item).subscribe({
-            next: () => {
-              this.snackbar.open('Type updated successfully', 'Close', {
-                duration: 3000,
-                panelClass: ['green-popup'],
-                horizontalPosition: 'end',
-                verticalPosition: 'top'
-              });
-              this.ngOnInit(); // Refresh data after delete
-            },
-            error: () => {
-              this.snackbar.open('Error updates type', 'Close', {
-                duration: 3000,
-                panelClass: ['error-popup'],
-                horizontalPosition: 'end',
-                verticalPosition: 'top'
-              });
-            }
-          });
-        }
-      });
-    }
-  }
-
-
-  savePriority(){
-    this.isSubmittedPriority = true;
-    if(!this.priority.some(priority => !priority.value.trim())){
-      this.priority.forEach((item)=>{
-        if(item.id == ''){
-          item.id = (+this.maxPriorityId + 1).toString();
-          this.configurationService.addTaskPriority(item).subscribe(newStatus => {
-            item.id = newStatus.id;
-            this.maxStatusId = newStatus.id;
-          });
-        }
-        else{
-          this.configurationService.updateTaskPriority(item).subscribe({
-            next: () => {
-              this.snackbar.open('Priority updated successfully', 'Close', {
-                duration: 3000,
-                panelClass: ['green-popup'],
-                horizontalPosition: 'end',
-                verticalPosition: 'top'
-              });
-              this.ngOnInit(); // Refresh data after delete
-            },
-            error: () => {
-              this.snackbar.open('Error updates priority', 'Close', {
-                duration: 3000,
-                panelClass: ['error-popup'],
-                horizontalPosition: 'end',
-                verticalPosition: 'top'
-              });
-            }
-          });
-        }
-      });
-    }
-  }
-
-  deleteStatus(event: dropdownItem){
-    this.status = this.status.filter((data)=> data.id != event.id);
-    this.configurationService.deleteTaskStatus(event).subscribe({
-      next: () => {
-        this.snackbar.open('Status deleted successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['green-popup'],
-          horizontalPosition: 'end',
-          verticalPosition: 'top'
-        });
-        this.ngOnInit(); // Refresh data after delete
-      },
-      error: () => {
-        this.snackbar.open('Error deleting status', 'Close', {
-          duration: 3000,
-          panelClass: ['error-popup'],
-          horizontalPosition: 'end',
-          verticalPosition: 'top'
-        });
+    // Simulate connection test
+    setTimeout(() => {
+      const isSuccess = Math.random() > 0.3; // 70% success rate for demo
+      if (isSuccess) {
+        this.setStatus('Connection successful!', 'success');
+      } else {
+        this.setStatus('Connection failed. Please check your credentials.', 'error');
       }
-    });
+    }, 2000);
   }
 
-
-
-  deleteType(event: dropdownItem){
-    this.status = this.types.filter((data)=> data.id != event.id);
-    this.configurationService.deleteTaskType(event).subscribe({
-      next: () => {
-        this.snackbar.open('Type deleted successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['green-popup'],
-          horizontalPosition: 'end',
-          verticalPosition: 'top'
-        });
-        this.ngOnInit(); // Refresh data after delete
-      },
-      error: () => {
-        this.snackbar.open('Error deleting Type', 'Close', {
-          duration: 3000,
-          panelClass: ['error-popup'],
-          horizontalPosition: 'end',
-          verticalPosition: 'top'
-        });
-      }
-    });
+  // Check if configuration is valid
+  isConfigurationValid(): boolean {
+    return !!(this.KeyId.trim() && this.SecretKey.trim());
   }
 
+  // Get status of configuration below header
+  getStatusClass(): string {
+    if (!this.KeyId || !this.SecretKey) {
+      return 'disconnected';
+    }
+    return 'connected';
+  }
 
+  getStatusIcon(): string {
+    if (!this.KeyId || !this.SecretKey) {
+      return 'cloud_off';
+    }
+    return 'cloud_done';
+  }
 
-  deletePriority(event: dropdownItem){
-    this.status = this.priority.filter((data)=> data.id != event.id);
-    this.configurationService.deleteTaskPriority(event).subscribe({
-      next: () => {
-        this.snackbar.open('priority deleted successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['green-popup'],
-          horizontalPosition: 'end',
-          verticalPosition: 'top'
-        });
-        this.ngOnInit(); // Refresh data after delete
-      },
-      error: () => {
-        this.snackbar.open('Error deleting priority', 'Close', {
-          duration: 3000,
-          panelClass: ['error-popup'],
-          horizontalPosition: 'end',
-          verticalPosition: 'top'
-        });
-      }
-    });
+  getStatusMessage(): string {
+    if (!this.KeyId || !this.SecretKey) {
+      return 'Configuration incomplete';
+    }
+    return 'Configuration ready';
+  }
+
+  // Set status message
+  private setStatus(message: string, type: 'success' | 'error' | 'warning' | 'info'): void {
+    this.statusMessage = message;
+    this.statusType = type;
+
+    // Auto-clear success and info messages after 5 seconds
+    if (type === 'success' || type === 'info') {
+      setTimeout(() => {
+        this.clearStatus();
+      }, 5000);
+    }
+  }
+
+  // Clear status message
+  clearStatus(): void {
+    this.statusMessage = '';
+  }
+
+  // Store original values for cancel functionality
+  private storeOriginalValues(): void {
+    this.originalValues = {
+      KeyId: this.KeyId,
+      SecretKey: this.SecretKey,
+      SessionToken: this.SessionToken,
+      profileName: this.profileName,
+    };
+  }
+
+  // Restore original values
+  private restoreOriginalValues(): void {
+    if (this.originalValues) {
+      this.KeyId = this.originalValues.KeyId;
+      this.SecretKey = this.originalValues.SecretKey;
+      this.SessionToken = this.originalValues.SessionToken;
+      this.profileName = this.originalValues.profileName;
+    }
+  }
+
+  // Store configuration (demo - using localStorage)
+  private storeConfiguration(): void {
+    const config = {
+      KeyId: this.KeyId,
+      SecretKey: '***', // Don't store actual secret key
+      SessionToken: this.SessionToken ? '***' : '',
+      profileName: this.profileName,
+    };
+
+    console.log('Storing configuration:', config);
+  }
+
+  // Load configuration (demo)
+  private loadConfiguration(): void {
+    // Demo data - in real app, load from service/localStorage
+    this.KeyId = '';
+    this.SecretKey = '';
+    this.SessionToken = '';
+    this.profileName = 'default';
   }
 }
