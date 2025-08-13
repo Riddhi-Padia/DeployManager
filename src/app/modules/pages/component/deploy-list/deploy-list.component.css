@@ -75,39 +75,49 @@
   border-radius: 50%;
   font-size: 18px;
   margin-right: 2px;
-  transition: background 0.2s;
-  cursor: pointer;
   border: 2px solid transparent;
 }
 
-.execution-indicator.status-success {
-  background: #e8f5e9;
-  color: #388e3c;
-  border-color: #388e3c33;
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 16px;
+  padding: 4px 14px;
+  justify-content: center;
+  border: 1px solid transparent;
 }
 
-.execution-indicator.status-failed {
-  background: #ffebee;
-  color: #d32f2f;
-  border-color: #d32f2f33;
+.status-success {
+  background: #e8f5e9 !important;
+  color: #388e3c !important;
+  border-color: #388e3c33 !important;
 }
 
-.execution-indicator.status-cancelled {
-  background: #f3e5f5;
-  color: #7b1fa2;
-  border-color: #7b1fa233;
+.status-failed {
+  background: #ffebee !important;
+  color: #d32f2f !important;
+  border-color: #d32f2f33 !important;
 }
 
-.execution-indicator.status-in-progress {
-  background: #e3f2fd;
-  color: #1976d2;
-  border-color: #1976d233;
+.status-cancelled {
+  background: #f3e5f5 !important;
+  color: #7b1fa2 !important;
+  border-color: #7b1fa233 !important;
 }
 
-.execution-indicator.status-pending {
-  background: #fffde7;
-  color: #fbc02d;
-  border-color: #fbc02d33;
+.status-in-progress {
+  background: #e3f2fd !important;
+  color: #1976d2 !important;
+  border-color: #1976d233 !important;
+}
+
+.status-pending {
+  background: #fffde7 !important;
+  color: #fbc02d !important;
+  border-color: #fbc02d33 !important;
 }
 
 .recent-executions .view-btn {
@@ -117,4 +127,20 @@
   text-decoration: underline;
   cursor: pointer;
   font-size: 14px;
+}
+
+::ng-deep .mat-mdc-standard-chip.status-success .mdc-evolution-chip__text-label {
+  color: #388e3c !important;
+}
+::ng-deep .mat-mdc-standard-chip.status-failed .mdc-evolution-chip__text-label {
+  color: #d32f2f !important;
+}
+::ng-deep .mat-mdc-standard-chip.status-cancelled .mdc-evolution-chip__text-label {
+  color: #7b1fa2 !important;
+}
+::ng-deep .mat-mdc-standard-chip.status-in-progress .mdc-evolution-chip__text-label {
+  color: #1976d2 !important;
+}
+::ng-deep .mat-mdc-standard-chip.status-pending .mdc-evolution-chip__text-label {
+  color: #fbc02d !important;
 }

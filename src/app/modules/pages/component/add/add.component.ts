@@ -10,6 +10,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add',
@@ -31,16 +32,17 @@ import { MatDividerModule } from '@angular/material/divider';
   styleUrls: ['./add.component.css'],
 })
 export class AddDeploymentComponent {
+  constructor(private router: Router){}
+
   // Deployment options checkboxes
   deploymentFields = [
-    { label: "Deploy Webpay Lambda" ,name: 'DEPLOY_WEBPAY_LAMBDA', selected: false },
-    { label: "Deploy Backend" ,name: 'DEPLOY_BACKEND', selected: false },
-    { label: "Deploy Driver UI" ,name: 'DEPLOY_DRIVER_UI', selected: false },
-    { label: "Deploy Admin UI" ,name: 'DEPLOY_ADMIN_UI', selected: false },
-    { label: "Deploy Webpay UI" ,name: 'DEPLOY_WEBPAY_UI', selected: false },
-    { label: "Update Resources" ,name: 'UPDATE_RESOURCES', selected: false },
-    { label: "Deploy Database" ,name: 'DEPLOY_DB', selected: false },
-    { label: "Deploy Layers" ,name: 'DEPLOY_LAYERS', selected: false },
+    { label: "Backend", name: 'DEPLOY_BACKEND', selected: false },
+    { label: "Driver UI", name: 'DEPLOY_DRIVER_UI', selected: false },
+    { label: "Admin UI", name: 'DEPLOY_ADMIN_UI', selected: false },
+    { label: "Webpay", name: 'DEPLOY_WEBPAY', selected: false },
+    { label: "Database", name: 'DEPLOY_DB', selected: false },
+    { label: "Layers", name: 'DEPLOY_LAYERS', selected: false },
+    { label: "Update Resources", name: 'UPDATE_RESOURCES', selected: false },
   ];
 
   defaultDeploymentFields = [
@@ -92,10 +94,30 @@ export class AddDeploymentComponent {
 
   //regions
   regions = [
-    { name: 'US', selected: true },
-    { name: 'IN', selected: false },
+    { name: 'UK', selected: true },
+    { name: 'IC', selected: false },
   ];
-  selectedRegion = [];
+  selectedRegion: string = '';
+
+  KeyId: string = '';
+  SecretKey: string = '';
+  SessionToken: string = '';
+  profileName: string = 'dev-root';
+
+  // Form state
+  hideSecretKey: boolean = true;
+
+  get isBackendSelected(): boolean {
+    return !!this.deploymentFields.find(f => f.label === 'Backend' && f.selected);
+  }
+
+  get isDatabaseSelected(): boolean {
+    return !!this.deploymentFields.find(f => f.label === 'Database' && f.selected);
+  }
+
+  backbtn() {
+    this.router.navigate(['/deploy-list']);
+  }
 
   // Handle form submission
   submitForm() {
@@ -110,11 +132,25 @@ export class AddDeploymentComponent {
 
     // Add deployment fields
     this.deploymentFields.forEach(field => {
-      formDataArray.push({
-        name: field.name,
-        value: field.selected ? 'yes' : 'no',
-        type: 'PLAINTEXT'
-      });
+      if (field.name == 'DEPLOY_WEBPAY') {
+        formDataArray.push({
+          name: field.name + '_UI',
+          value: field.selected ? 'yes' : 'no',
+          type: 'PLAINTEXT'
+        });
+        formDataArray.push({
+          name: field.name + '_LAMBDA',
+          value: field.selected ? 'yes' : 'no',
+          type: 'PLAINTEXT'
+        });
+      }
+      else {
+        formDataArray.push({
+          name: field.name,
+          value: field.selected ? 'yes' : 'no',
+          type: 'PLAINTEXT'
+        });
+      }
     });
 
     // Add default deployment fields
@@ -134,10 +170,10 @@ export class AddDeploymentComponent {
     });
 
     // Add lambda selection
-    const lambdaValue = this.selectedLambdas.length > 0 ? this.selectedLambdas.join(',') : 'all';
+    const lambdaValue = this.selectedLambdas.length <= 0 ? '' : this.selectedLambdas.join(',');
     formDataArray.push({
       name: 'LAMBDA_TO_DEPLOY',
-      value: lambdaValue,
+      value: this.deploymentFields.find(f => f.label === "Backend" && f.selected)? lambdaValue : "",
       type: 'PLAINTEXT'
     });
 
@@ -146,10 +182,12 @@ export class AddDeploymentComponent {
     if (selectedScripts.length > 0) {
       formDataArray.push({
         name: 'SCRIPTS',
-        value: selectedScripts.join(','),
+        value: this.deploymentFields.find(f => f.label === "Database" && f.selected)? selectedScripts.join(','): "",
         type: 'PLAINTEXT'
       });
     }
+
+    this.selectedRegion = this.regions.filter(region => region.selected).map(region => region.name).join(',') || '';
 
     // Convert to JSON string and log
     const jsonOutput = JSON.stringify(formDataArray, null, 2);
@@ -160,7 +198,8 @@ export class AddDeploymentComponent {
   // Form validation helper
   isFormValid(): boolean {
     const hasSelectedDeploymentOption = this.deploymentFields.some(field => field.selected);
-    return hasSelectedDeploymentOption;
+    const hasCredentials = !!this.KeyId && !!this.SecretKey && !!this.SessionToken;
+    return hasSelectedDeploymentOption && hasCredentials;
   }
 
   // Preview configuration
@@ -175,12 +214,5 @@ export class AddDeploymentComponent {
     console.log('Configuration Preview:', config);
     // You can show this in a dialog or separate component
     alert(`Configuration Preview:\n\nDeployment Options: ${config.deploymentOptions.join(', ')}\nAutomation Version: ${config.automationVersion}\nLambdas: ${config.selectedLambdas.join(', ')}\nScripts: ${config.selectedScripts.join(', ')}`);
-  }
-
-  // Reset form
-  resetForm() {
-    this.deploymentFields.forEach(field => field.selected = false);
-    this.selectedLambdas = [];
-    Object.keys(this.scripts).forEach(script => this.scripts[script] = false);
   }
 }

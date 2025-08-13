@@ -19,20 +19,7 @@
   margin: 0;
 }
 
-/* Section styling */
-.form-section {
-  margin-bottom: 32px;
-}
-
 /* Checkbox grid for deployment options */
-.option-grid {
-  display: grid;
-  align-items: center;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-  margin-top: 16px;
-}
-
 .deployment-checkbox {
   padding: 12px;
   border: 1px solid #e0e0e0;
