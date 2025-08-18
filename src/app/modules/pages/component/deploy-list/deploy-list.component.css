@@ -1,10 +1,9 @@
 /* Page header */
 .page-header {
-  margin-bottom: 32px;
-  padding: 24px 32px;
-  background-color: #7965c1e0;
+  margin-bottom: 20px;
+  padding: 24px 0px;
   border-radius: 16px;
-  color: white;
+  color: #7965c1e0;
 }
 
 .page-title {

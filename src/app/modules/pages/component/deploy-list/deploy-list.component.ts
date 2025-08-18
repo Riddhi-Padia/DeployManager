@@ -21,7 +21,6 @@ interface DeploymentPipeline {
   status: 'In progress' | 'Success' | 'Failed' | 'Cancelled' | 'Pending';
   sourceRevisions: string;
   executionStarted: string;
-  recentExecutions: ExecutionStatus[];
 }
 
 interface ExecutionStatus {
@@ -61,7 +60,7 @@ interface StatusFilter {
 export class DeployListComponent implements OnInit {
   dataSource: DeploymentPipeline[] = [];
   filteredDataSource = new MatTableDataSource<DeploymentPipeline>([]);
-  displayedColumns: string[] = ['name', 'status', 'sourceRevisions', 'executionStarted', 'recentExecutions'];
+  displayedColumns: string[] = ['name', 'status', 'sourceRevisions', 'executionStarted'];
   isLoading = false;
 
   columns: TableColumn[] = [
@@ -69,7 +68,6 @@ export class DeployListComponent implements OnInit {
     { columnDef: 'status', header: 'Latest execution status', sortable: true },
     { columnDef: 'sourceRevisions', header: 'Latest source revisions', sortable: false },
     { columnDef: 'executionStarted', header: 'Latest execution started', sortable: true },
-    { columnDef: 'recentExecutions', header: 'Most recent executions', sortable: false },
   ];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -98,14 +96,7 @@ export class DeployListComponent implements OnInit {
           name: 'emspuk-infra-single-pipeline',
           status: 'Success',
           sourceRevisions: '-',
-          executionStarted: 'Just now',
-          recentExecutions: [
-            { status: 'success', tooltip: 'Execution #12 - Completed successfully' },
-            { status: 'success', tooltip: 'Execution #11 - Completed successfully' },
-            { status: 'failed', tooltip: 'Execution #10 - Failed due to timeout' },
-            { status: 'cancelled', tooltip: 'Execution #9 - Cancelled by user' },
-            { status: 'in-progress', tooltip: 'Execution #13 - Currently running' }
-          ]
+          executionStarted: 'Just now'
         },
         {
           id: '2',
@@ -113,13 +104,6 @@ export class DeployListComponent implements OnInit {
           status: 'Success',
           sourceRevisions: 'v2.1.0',
           executionStarted: '2 hours ago',
-          recentExecutions: [
-            { status: 'success', tooltip: 'Execution #45 - Completed successfully' },
-            { status: 'success', tooltip: 'Execution #44 - Completed successfully' },
-            { status: 'success', tooltip: 'Execution #43 - Completed successfully' },
-            { status: 'failed', tooltip: 'Execution #42 - Failed validation' },
-            { status: 'success', tooltip: 'Execution #41 - Completed successfully' }
-          ]
         },
         {
           id: '3',
@@ -127,13 +111,6 @@ export class DeployListComponent implements OnInit {
           status: 'Failed',
           sourceRevisions: 'main@a4b8c9d',
           executionStarted: '1 day ago',
-          recentExecutions: [
-            { status: 'failed', tooltip: 'Execution #23 - Build failed' },
-            { status: 'failed', tooltip: 'Execution #22 - Test failures' },
-            { status: 'success', tooltip: 'Execution #21 - Completed successfully' },
-            { status: 'success', tooltip: 'Execution #20 - Completed successfully' },
-            { status: 'cancelled', tooltip: 'Execution #19 - Cancelled during build' }
-          ]
         },
         {
           id: '4',
@@ -141,13 +118,6 @@ export class DeployListComponent implements OnInit {
           status: 'Success',
           sourceRevisions: 'release/v1.5.2',
           executionStarted: '3 hours ago',
-          recentExecutions: [
-            { status: 'success', tooltip: 'Execution #8 - Migration completed' },
-            { status: 'success', tooltip: 'Execution #7 - Migration completed' },
-            { status: 'pending', tooltip: 'Execution #6 - Waiting for approval' },
-            { status: 'success', tooltip: 'Execution #5 - Migration completed' },
-            { status: 'success', tooltip: 'Execution #4 - Migration completed' }
-          ]
         },
         {
           id: '5',
@@ -155,13 +125,6 @@ export class DeployListComponent implements OnInit {
           status: 'Cancelled',
           sourceRevisions: 'feature/new-ui',
           executionStarted: '5 hours ago',
-          recentExecutions: [
-            { status: 'cancelled', tooltip: 'Execution #15 - Cancelled by admin' },
-            { status: 'failed', tooltip: 'Execution #14 - Build timeout' },
-            { status: 'failed', tooltip: 'Execution #13 - Dependencies error' },
-            { status: 'success', tooltip: 'Execution #12 - Completed successfully' },
-            { status: 'in-progress', tooltip: 'Execution #11 - In progress' }
-          ]
         },
         {
           id: '6',
@@ -169,13 +132,6 @@ export class DeployListComponent implements OnInit {
           status: 'Cancelled',
           sourceRevisions: 'feature/new-ui',
           executionStarted: '5 hours ago',
-          recentExecutions: [
-            { status: 'cancelled', tooltip: 'Execution #15 - Cancelled by admin' },
-            { status: 'failed', tooltip: 'Execution #14 - Build timeout' },
-            { status: 'failed', tooltip: 'Execution #13 - Dependencies error' },
-            { status: 'success', tooltip: 'Execution #12 - Completed successfully' },
-            { status: 'in-progress', tooltip: 'Execution #11 - In progress' }
-          ]
         },
         {
           id: '7',
@@ -183,13 +139,6 @@ export class DeployListComponent implements OnInit {
           status: 'Cancelled',
           sourceRevisions: 'feature/new-ui',
           executionStarted: '5 hours ago',
-          recentExecutions: [
-            { status: 'cancelled', tooltip: 'Execution #15 - Cancelled by admin' },
-            { status: 'failed', tooltip: 'Execution #14 - Build timeout' },
-            { status: 'failed', tooltip: 'Execution #13 - Dependencies error' },
-            { status: 'success', tooltip: 'Execution #12 - Completed successfully' },
-            { status: 'in-progress', tooltip: 'Execution #11 - In progress' }
-          ]
         }
       ];
 

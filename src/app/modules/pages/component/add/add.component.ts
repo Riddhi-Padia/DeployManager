@@ -95,14 +95,14 @@ export class AddDeploymentComponent {
   //regions
   regions = [
     { name: 'UK', selected: true },
-    { name: 'IC', selected: false },
+    { name: 'IS', selected: false },
   ];
   selectedRegion: string = '';
 
   KeyId: string = '';
   SecretKey: string = '';
   SessionToken: string = '';
-  profileName: string = 'dev-root';
+  profileName: string = 'rust-hello-codebuild';
 
   // Form state
   hideSecretKey: boolean = true;
@@ -121,79 +121,83 @@ export class AddDeploymentComponent {
 
   // Handle form submission
   submitForm() {
-    const regions = [];
-    this.regions.forEach(region => {
-      if (region.selected) {
-        regions.push(region.name);
-      }
-    });
+  const regions: string[] = [];
+  this.regions.forEach(region => {
+    if (region.selected) {
+      regions.push(region.name);
+    }
+  });
 
-    const formDataArray = [];
+  const environmentVariables: { name: string; value: string }[] = [];
 
-    // Add deployment fields
-    this.deploymentFields.forEach(field => {
-      if (field.name == 'DEPLOY_WEBPAY') {
-        formDataArray.push({
-          name: field.name + '_UI',
-          value: field.selected ? 'yes' : 'no',
-          type: 'PLAINTEXT'
-        });
-        formDataArray.push({
-          name: field.name + '_LAMBDA',
-          value: field.selected ? 'yes' : 'no',
-          type: 'PLAINTEXT'
-        });
-      }
-      else {
-        formDataArray.push({
-          name: field.name,
-          value: field.selected ? 'yes' : 'no',
-          type: 'PLAINTEXT'
-        });
-      }
-    });
-
-    // Add default deployment fields
-    this.defaultDeploymentFields.forEach(field => {
-      formDataArray.push({
+  // Add deployment fields
+  this.deploymentFields.forEach(field => {
+    if (field.name === 'DEPLOY_WEBPAY') {
+      environmentVariables.push({
+        name: field.name + '_UI',
+        value: field.selected ? 'yes' : 'no',
+      });
+      environmentVariables.push({
+        name: field.name + '_LAMBDA',
+        value: field.selected ? 'yes' : 'no',
+      });
+    } else {
+      environmentVariables.push({
         name: field.name,
         value: field.selected ? 'yes' : 'no',
-        type: 'PLAINTEXT'
-      });
-    });
-
-    // Add automation version if provided
-    formDataArray.push({
-      name: 'AutomationVersion',
-      value: '',
-      type: 'PLAINTEXT'
-    });
-
-    // Add lambda selection
-    const lambdaValue = this.selectedLambdas.length <= 0 ? '' : this.selectedLambdas.join(',');
-    formDataArray.push({
-      name: 'LAMBDA_TO_DEPLOY',
-      value: this.deploymentFields.find(f => f.label === "Backend" && f.selected)? lambdaValue : "",
-      type: 'PLAINTEXT'
-    });
-
-    // Add scripts if any are selected
-    const selectedScripts = Object.keys(this.scripts).filter(script => this.scripts[script]);
-    if (selectedScripts.length > 0) {
-      formDataArray.push({
-        name: 'SCRIPTS',
-        value: this.deploymentFields.find(f => f.label === "Database" && f.selected)? selectedScripts.join(','): "",
-        type: 'PLAINTEXT'
       });
     }
+  });
 
-    this.selectedRegion = this.regions.filter(region => region.selected).map(region => region.name).join(',') || '';
+  // Add default deployment fields
+  this.defaultDeploymentFields.forEach(field => {
+    environmentVariables.push({
+      name: field.name,
+      value: field.selected ? 'yes' : 'no',
+    });
+  });
 
-    // Convert to JSON string and log
-    const jsonOutput = JSON.stringify(formDataArray, null, 2);
-    console.log('Deployment Configuration JSON:', jsonOutput);
-    console.log('Selected Region:', this.selectedRegion);
+  // Add automation version if provided
+  environmentVariables.push({
+    name: 'AutomationVersion',
+    value: '',
+  });
+
+  // Add lambda selection
+  const lambdaValue =
+    this.selectedLambdas.length <= 0 ? '' : this.selectedLambdas.join(',');
+  environmentVariables.push({
+    name: 'LAMBDA_TO_DEPLOY',
+    value: this.deploymentFields.find(f => f.label === 'Backend' && f.selected)
+      ? lambdaValue
+      : '',
+  });
+
+  // Add scripts if any are selected
+  const selectedScripts = Object.keys(this.scripts).filter(
+    script => this.scripts[script]
+  );
+  if (selectedScripts.length > 0) {
+    environmentVariables.push({
+      name: 'SCRIPTS',
+      value: this.deploymentFields.find(f => f.label === 'Database' && f.selected)
+        ? selectedScripts.join(',')
+        : '',
+    });
   }
+
+  // Final JSON structure
+  const finalJson = {
+    access_key_id: this.KeyId,
+    secret_access_key: this.SecretKey,
+    region: this.selectedRegion || (regions.length > 0 ? regions[0] : ''), // pick first selected
+    session_token: this.SessionToken,
+    project_name: this.profileName, // or another field if you want
+    environment_variables: environmentVariables,
+  };
+
+  console.log('Final JSON:', JSON.stringify(finalJson, null, 2));
+}
 
   // Form validation helper
   isFormValid(): boolean {
