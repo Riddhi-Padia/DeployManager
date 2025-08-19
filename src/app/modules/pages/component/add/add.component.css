@@ -1,16 +1,12 @@
-/* Header styling */
-.addDeploy{
-  margin-top: 1rem !important;
-  border-radius: 10px;
-  border : 1px solid #7965C1;
+mat-card{
+  background-color: white !important;
+  border: none;
+  box-shadow: none;
 }
-
+/* Header styling */
 .form-header {
-  color: #7965c1;
-  border-bottom: 1px solid #7965C1;
+  color: #3a3a3a;
   padding: 24px;
-  border-radius: 12px 12px 0 0;
-  background-color: #7965c118;
 }
 
 .main-title {
@@ -19,30 +15,9 @@
   margin: 0;
 }
 
-/* Checkbox grid for deployment options */
-.deployment-checkbox {
-  padding: 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  background: #fafafa;
-}
-
-.deployment-checkbox:hover {
-  background: #f0f7ff;
-  border-color: #667eea;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
-}
-
-.deployment-checkbox.mat-checkbox-checked {
-  background: #e8f2ff;
-  border-color: #667eea;
-}
-
 /* Scripts section */
 .checkbox {
-  padding: 16px;
+  padding: 8px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   background: #fafafa;
@@ -50,14 +25,8 @@
 }
 
 .checkbox:hover {
-  background: #e3cf952a;
-  border-color: #E3D095;
-  transform: translateY(-1px);
-}
-
-.checkbox.mat-checkbox-checked {
-  background: #fff8e1;
-  border-color: #ff9800;
+  background: #ff65650e;
+  border-color: #ff6565;
 }
 
 /* Form fields */
@@ -91,14 +60,11 @@ mat-select-trigger {
   font-weight: 600;
   padding: 12px 32px;
   border-radius: 25px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
   transition: all 0.3s ease;
 }
 
 .deploy-button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
 
 .deploy-button:disabled {
@@ -134,9 +100,12 @@ mat-select-trigger {
 }
 
 /* Button icons */
-.form-actions button mat-icon {
+.form-actions{
   margin-right: 8px;
   font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: end ;
 }
 
 /* Responsive design */

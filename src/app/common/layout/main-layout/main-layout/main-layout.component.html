@@ -1,7 +1,7 @@
 <div>
   <app-header (ToggleSidebar)="toggleSideBar()"></app-header>
-  <mat-drawer-container class="example-container">
-    <mat-drawer mode="side" #drawer opened>
+  <mat-drawer-container>
+    <mat-drawer  class="example-container" mode="side" #drawer opened>
         <app-sidebar></app-sidebar>
     </mat-drawer>
     <mat-drawer-content>

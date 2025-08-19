@@ -1,14 +1,16 @@
 .example-icon {
     border: 0px;
     background-color: transparent;
+    color: white;
   }
 
 .header-title{
     margin-left:20px;
     font-size: 1.7rem;
-    font-weight: bolder;
-    color: #483AA0;
+    color: white;
 }
 
-mat-toolbar{
+mat-toolbar {
+    background-color: #3a3a3a;
+    color: white;
 }

@@ -1,0 +1,39 @@
+/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+.error-popup {
+  --mdc-snackbar-container-color: rgb(247, 42, 42) !important;
+  --mdc-snackbar-supporting-text-color: rgb(252, 251, 251) !important;
+  --mat-snack-bar-button-color: #fda488;
+}
+
+.green-popup {
+  --mdc-snackbar-container-color: rgb(80, 179, 85) !important;
+  --mdc-snackbar-supporting-text-color: rgb(252, 251, 251) !important;
+  --mat-snack-bar-button-color: #f1f501;
+}
+
+::ng-deep mat-drawer {
+  background-color: #1e1e2d;
+  /* Change background color */
+  color: white;
+  /* Text color */
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+  /* Add box shadow */
+  width: 250px;
+  /* Adjust width */
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  /* Optional border */
+}
+
+body {
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  margin: 0;
+  @include mat.theme((color: (theme-type: light,
+        primary: mat.$red-palette,
+        tertiary: mat.$red-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    ));
+}

@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
+import { DeployService } from '../../services/deploy.service';
 
 @Component({
   selector: 'app-add',
@@ -32,7 +33,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./add.component.css'],
 })
 export class AddDeploymentComponent {
-  constructor(private router: Router){}
+  constructor(private router: Router, private deployService : DeployService){}
 
   // Deployment options checkboxes
   deploymentFields = [
@@ -94,15 +95,16 @@ export class AddDeploymentComponent {
 
   //regions
   regions = [
-    { name: 'UK', selected: true },
-    { name: 'IS', selected: false },
+    { label:'UK',  name: 'eu-west-2', selected: false },
+    { label: 'IS', name: 'eu-west-1', selected: false },
   ];
-  selectedRegion: string = '';
+  selectedRegions: string[] = [];
 
   KeyId: string = '';
   SecretKey: string = '';
   SessionToken: string = '';
-  profileName: string = 'rust-hello-codebuild';
+  profileNameUK: string = 'emspuk-infra-dynamic-pipeline';
+  profileNameIS: string = 'emspis-infra-dynamic-pipeline';
 
   // Form state
   hideSecretKey: boolean = true;
@@ -121,12 +123,13 @@ export class AddDeploymentComponent {
 
   // Handle form submission
   submitForm() {
-  const regions: string[] = [];
-  this.regions.forEach(region => {
-    if (region.selected) {
-      regions.push(region.name);
-    }
-  });
+  this.selectedRegions = [];
+  this.selectedLambdas = [];
+  // this.regions.forEach(region => {
+  //   if (region.selected) {
+  //     this.selectedRegions.push(region.name);
+  //   }
+  // });
 
   const environmentVariables: { name: string; value: string }[] = [];
 
@@ -190,33 +193,37 @@ export class AddDeploymentComponent {
   const finalJson = {
     access_key_id: this.KeyId,
     secret_access_key: this.SecretKey,
-    region: this.selectedRegion || (regions.length > 0 ? regions[0] : ''), // pick first selected
+    region: "eu-west-2",
+    // region: this.selectedRegions,
     session_token: this.SessionToken,
-    project_name: this.profileName, // or another field if you want
+    project_name: this.profileNameUK, // or another field if you want
     environment_variables: environmentVariables,
   };
 
   console.log('Final JSON:', JSON.stringify(finalJson, null, 2));
+
+  // Call the service to add deployment
+  this.deployService.addDeployment(finalJson).subscribe({
+    next: (response: any) => {
+      console.log('Deployment started successfully:', response);
+      // Navigate to the deployment list or show success message
+      this.router.navigate(['/deploy-list']);
+    },
+    error: (error: { message: string; }) => {
+      console.error('Error starting deployment:', error);
+      // Handle error, show message to user
+      alert('Error starting deployment: ' + error.message);
+    }
+  });
 }
 
   // Form validation helper
   isFormValid(): boolean {
     const hasSelectedDeploymentOption = this.deploymentFields.some(field => field.selected);
-    const hasCredentials = !!this.KeyId && !!this.SecretKey && !!this.SessionToken;
-    return hasSelectedDeploymentOption && hasCredentials;
-  }
-
-  // Preview configuration
-  previewConfig() {
-    const config = {
-      deploymentOptions: this.deploymentFields.filter(f => f.selected).map(f => f.name),
-      automationVersion: '',
-      selectedLambdas: this.selectedLambdas,
-      selectedScripts: Object.keys(this.scripts).filter(s => this.scripts[s])
-    };
-
-    console.log('Configuration Preview:', config);
-    // You can show this in a dialog or separate component
-    alert(`Configuration Preview:\n\nDeployment Options: ${config.deploymentOptions.join(', ')}\nAutomation Version: ${config.automationVersion}\nLambdas: ${config.selectedLambdas.join(', ')}\nScripts: ${config.selectedScripts.join(', ')}`);
+    const hasCredentials = !!this.KeyId && !!this.SecretKey;
+    // const hasCredentials = !!this.KeyId && !!this.SecretKey && !!this.SessionToken;
+    const backendCredentials = this.isBackendSelected ? this.selectedLambdas.length > 0 : true;
+    const regionSelected = this.regions.some(region => region.selected);
+    return hasSelectedDeploymentOption && hasCredentials && backendCredentials && regionSelected;
   }
 }

@@ -1,4 +1,4 @@
-<mat-card class="addDeploy">
+<mat-card>
   <form (ngSubmit)="submitForm()" class="w-100">
     <mat-card-header class="form-header w-100">
       <mat-card-title class="main-title">New Deployment</mat-card-title>
@@ -9,8 +9,8 @@
         <mat-label class="me-2 fw-bold fs-5">Regions:</mat-label>
         <div class="d-flex flex-wrap gap-2">
           <mat-checkbox *ngFor="let region of regions; let r = index" [(ngModel)]="region.selected"
-            [name]="'region_' + r" [id]="region.name" color="primary" class="region-checkbox">
-            {{ region.name | uppercase }}
+            [name]="'region_' + r" [id]="region.label" color="primary" class="region-checkbox">
+            {{ region.label | uppercase }}
           </mat-checkbox>
         </div>
       </div>
@@ -52,7 +52,7 @@
         <!-- Scripts Section -->
         <div class="col" *ngIf="isDatabaseSelected">
           <div class="d-flex justify-content-start gap-3 align-items-center">
-            <h2>Scripts Configuration:</h2>
+            <h5>Scripts Configuration:</h5>
             <div class="d-flex gap-3">
               <mat-checkbox *ngFor="let script of scriptsOptions; let j = index" [(ngModel)]="scripts[script]"
                 [name]="'script_' + j" [id]="'script_' + script" class="checkbox pe-5" color="primary">
@@ -94,7 +94,7 @@
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Session Token</mat-label>
           <textarea matInput placeholder="Enter your AWS Session Token (optional)" [(ngModel)]="SessionToken"
-            name="sessionToken" rows="2" #sessionTokenInput="ngModel" required></textarea>
+            name="sessionToken" rows="2" #sessionTokenInput="ngModel"></textarea>
           <mat-icon matPrefix>token</mat-icon>
           <mat-error *ngIf="sessionTokenInput.invalid && sessionTokenInput.touched">
             Session Token is required
@@ -104,7 +104,7 @@
     </mat-card-content>
 
     <!-- Action Buttons -->
-    <mat-card-actions class="form-actions">
+    <div class="form-actions">
       <button mat-raised-button color="primary" type="submit" class="deploy-button" [disabled]="!isFormValid()">
         <mat-icon>rocket_launch</mat-icon>
         Deploy Now
@@ -113,6 +113,6 @@
         <mat-icon>cancel</mat-icon>
         Cancel
       </button>
-    </mat-card-actions>
+    </div>
   </form>
 </mat-card>

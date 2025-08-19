@@ -7,5 +7,6 @@
 }
 
 mat-toolbar{
+  border-top: 1px solid lightgray;
     height: 40px;
 }
