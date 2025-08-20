@@ -8,87 +8,129 @@
   </div>
 
   <div class="deployment-table-wrapper">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center">
       <mat-form-field appearance="outline" class="w-25">
         <mat-label>Search</mat-label>
         <input matInput (keyup)="applyFilter($event)" #input>
       </mat-form-field>
-      <button mat-raised-button color="primary" (click)="addDeployment()" class="add-deployment-btn">
-        <mat-icon>add</mat-icon>
-        New Deployment
-      </button>
+      <div class="d-flex align-items-center gap-3">
+        <button mat-mini-fab (click)="loadDeployments()" class="load-deployment-btn">
+          <mat-icon>refresh</mat-icon>
+        </button>
+        <button mat-raised-button color="primary" (click)="addDeployment()" class="add-deployment-btn">
+          <mat-icon>add</mat-icon>
+          New Deployment
+        </button>
+      </div>
     </div>
+    <div class="">
+      <h4>UK Region</h4>
+      <table mat-table [dataSource]="UKtabledDataSource" class="mat-elevation-z8">
+        <!-- Execution ID -->
+        <ng-container matColumnDef="executionID">
+          <th mat-header-cell *matHeaderCellDef>Execution ID</th>
+          <td mat-cell *matCellDef="let element">
+            <a class="text-underline" (click)="showDetails(element.executionID)">{{ element.executionID }}</a>
+          </td>
+        </ng-container>
+        <!-- Status -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let element">
+            <mat-chip [ngClass]="'status-chip ' + getStatusClass(element.status)">
+              {{ element.status }}
+            </mat-chip>
+          </td>
+        </ng-container>
+        <!-- Source Revisions -->
+        <ng-container matColumnDef="sourceRevisions">
+          <th mat-header-cell *matHeaderCellDef>Source Revisions</th>
+          <td mat-cell *matCellDef="let element">{{ element.sourceRevisions || '-' }}</td>
+        </ng-container>
+        <!-- Trigger -->
+        <ng-container matColumnDef="trigger">
+          <th mat-header-cell *matHeaderCellDef>Trigger</th>
+          <td mat-cell *matCellDef="let element">{{ element.trigger }}</td>
+        </ng-container>
+        <!-- Started -->
+        <ng-container matColumnDef="started">
+          <th mat-header-cell *matHeaderCellDef>Started</th>
+          <td mat-cell *matCellDef="let element">{{ element.started }}</td>
+        </ng-container>
+        <!-- Duration -->
+        <ng-container matColumnDef="Duration">
+          <th mat-header-cell *matHeaderCellDef>Duration</th>
+          <td mat-cell *matCellDef="let element">{{ element.Duration }}</td>
+        </ng-container>
+        <!-- Completed -->
+        <ng-container matColumnDef="Completed">
+          <th mat-header-cell *matHeaderCellDef>Completed</th>
+          <td mat-cell *matCellDef="let element">{{ element.Completed }}</td>
+        </ng-container>
 
-    <table mat-table [dataSource]="filteredDataSource" class="mat-elevation-z8" matSort>
-      <!-- Name Column -->
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-        <td mat-cell *matCellDef="let element" >
-          <div class="d-flex align-items-center gap-2 justify-content-start">
-            <mat-icon class="pipeline-icon">device_hub</mat-icon>
-            <span class="name-text">{{ element.name }}</span>
-          </div>
-        </td>
-      </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell empty-data" [attr.colspan]="displayedColumns.length">
+            No data for UK region.
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h4>IS Region</h4>
+      <table mat-table [dataSource]="IStabledDataSource" class="mat-elevation-z8" matSort>
+        <!-- Execution ID -->
+        <ng-container matColumnDef="executionID">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Execution ID</th>
+          <td mat-cell *matCellDef="let element">
+            <a class="text-underline" (click)="showDetails(element.executionID)">{{ element.executionID }}</a>
+          </td>
+        </ng-container>
+        <!-- Status -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+          <td mat-cell *matCellDef="let element">
+            <mat-chip [ngClass]="'status-chip ' + getStatusClass(element.status)">
+              {{ element.status }}
+            </mat-chip>
+          </td>
+        </ng-container>
+        <!-- Source Revisions -->
+        <ng-container matColumnDef="sourceRevisions">
+          <th mat-header-cell *matHeaderCellDef>Branch</th>
+          <td mat-cell *matCellDef="let element">{{ element.sourceRevisions || '-' }}</td>
+        </ng-container>
+        <!-- Trigger -->
+        <ng-container matColumnDef="trigger">
+          <th mat-header-cell *matHeaderCellDef>Trigger</th>
+          <td mat-cell *matCellDef="let element">{{ element.trigger }}</td>
+        </ng-container>
+        <!-- Started -->
+        <ng-container matColumnDef="started">
+          <th mat-header-cell *matHeaderCellDef>Started</th>
+          <td mat-cell *matCellDef="let element">{{ element.started }}</td>
+        </ng-container>
+        <!-- Duration -->
+        <ng-container matColumnDef="Duration">
+          <th mat-header-cell *matHeaderCellDef>Duration</th>
+          <td mat-cell *matCellDef="let element">{{ element.Duration }}</td>
+        </ng-container>
+        <!-- Completed -->
+        <ng-container matColumnDef="Completed">
+          <th mat-header-cell *matHeaderCellDef>Completed</th>
+          <td mat-cell *matCellDef="let element">{{ element.Completed }}</td>
+        </ng-container>
 
-      <!-- Status Column -->
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Execution status</th>
-        <td mat-cell *matCellDef="let element">
-          <mat-chip [ngClass]="'status-chip ' + getStatusClass(element.status)">
-            {{ element.status }}
-          </mat-chip>
-        </td>
-      </ng-container>
-
-      <!-- Source Revisions Column -->
-      <ng-container matColumnDef="sourceRevisions">
-        <th mat-header-cell *matHeaderCellDef>Branch</th>
-        <td mat-cell *matCellDef="let element">
-          <span class="revision-text">{{ element.sourceRevisions || '-' }}</span>
-        </td>
-      </ng-container>
-
-      <!-- Execution Started Column -->
-      <ng-container matColumnDef="executionStarted">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Execution started</th>
-        <td mat-cell *matCellDef="let element">
-          <span class="time-info">
-            {{ formatTime(element.executionStarted) }}
-          </span>
-        </td>
-      </ng-container>
-
-      <!-- Recent Executions Column -->
-      <ng-container matColumnDef="recentExecutions">
-        <th mat-header-cell *matHeaderCellDef>Most recent executions</th>
-        <td mat-cell *matCellDef="let element">
-          <div class="recent-executions">
-            <ng-container *ngFor="let exec of element.recentExecutions">
-              <span
-                class="execution-indicator status-{{exec.status}}"
-                matTooltip="{{exec.tooltip}}"
-              >
-                <mat-icon>{{ getExecutionIcon(exec.status) }}</mat-icon>
-              </span>
-            </ng-container>
-            <a class="view-btn ms-2" matTooltip="View details" href="#">
-              View details
-            </a>
-          </div>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell empty-data" [attr.colspan]="displayedColumns.length">
-          No data matching the filter "{{input.value}}"
-        </td>
-      </tr>
-    </table>
-
-    <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell empty-data" [attr.colspan]="displayedColumns.length">
+            No data for IS region.
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
 
   <!-- Loading Overlay -->

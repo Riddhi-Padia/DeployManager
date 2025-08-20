@@ -57,7 +57,6 @@ mat-select-trigger {
 
 .deploy-button {
   font-size: 16px;
-  font-weight: 600;
   padding: 12px 32px;
   border-radius: 25px;
   transition: all 0.3s ease;

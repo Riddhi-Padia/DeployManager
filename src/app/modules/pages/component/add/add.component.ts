@@ -107,7 +107,9 @@ export class AddDeploymentComponent {
   profileNameIS: string = 'emspis-infra-dynamic-pipeline';
 
   // Form state
+  hideAccessKey: boolean = true;
   hideSecretKey: boolean = true;
+  hideSessionToken: boolean = true;
 
   get isBackendSelected(): boolean {
     return !!this.deploymentFields.find(f => f.label === 'Backend' && f.selected);
@@ -123,14 +125,10 @@ export class AddDeploymentComponent {
 
   // Handle form submission
   submitForm() {
-  this.selectedRegions = [];
-  this.selectedLambdas = [];
-  // this.regions.forEach(region => {
-  //   if (region.selected) {
-  //     this.selectedRegions.push(region.name);
-  //   }
-  // });
+  // Get selected regions
+  const selectedRegions = this.regions.filter(r => r.selected);
 
+  // Prepare environment variables (same for both calls)
   const environmentVariables: { name: string; value: string }[] = [];
 
   // Add deployment fields
@@ -168,7 +166,7 @@ export class AddDeploymentComponent {
 
   // Add lambda selection
   const lambdaValue =
-    this.selectedLambdas.length <= 0 ? '' : this.selectedLambdas.join(',');
+    this.selectedLambdas.length <= 0 ? '' : this.selectedLambdas.join(', ');
   environmentVariables.push({
     name: 'LAMBDA_TO_DEPLOY',
     value: this.deploymentFields.find(f => f.label === 'Backend' && f.selected)
@@ -189,30 +187,44 @@ export class AddDeploymentComponent {
     });
   }
 
-  // Final JSON structure
-  const finalJson = {
-    access_key_id: this.KeyId,
-    secret_access_key: this.SecretKey,
-    region: "eu-west-2",
-    // region: this.selectedRegions,
-    session_token: this.SessionToken,
-    project_name: this.profileNameUK, // or another field if you want
-    environment_variables: environmentVariables,
+  // Helper to call API for a region/profile
+  const callDeployment = (region: string, projectName: string) => {
+    const finalJson = {
+      access_key_id: this.KeyId,
+      secret_access_key: this.SecretKey,
+      region,
+      session_token: this.SessionToken,
+      project_name: projectName,
+      environment_variables: environmentVariables,
+    };
+
+    console.log('Final JSON:', JSON.stringify(finalJson, null, 2));
+
+    this.deployService.addDeployment(finalJson).subscribe({
+      next: (response: any) => {
+        console.log(`Deployment started successfully for ${projectName}:`, response);
+        // Navigate only after both calls if both selected
+        if (selectedRegions.length === 1 || region === selectedRegions[selectedRegions.length - 1].name) {
+          this.router.navigate(['/deploy-list']);
+        }
+      },
+      error: (error: { message: string }) => {
+        console.error(`Error starting deployment for ${projectName}:`, error);
+        alert('Error starting deployment: ' + error.message);
+      }
+    });
+    localStorage.setItem('AccessKey', this.KeyId);
+    localStorage.setItem('SecretKey', this.SecretKey);
+    localStorage.setItem('SessionToken', this.SessionToken);
   };
 
-  console.log('Final JSON:', JSON.stringify(finalJson, null, 2));
-
-  // Call the service to add deployment
-  this.deployService.addDeployment(finalJson).subscribe({
-    next: (response: any) => {
-      console.log('Deployment started successfully:', response);
-      // Navigate to the deployment list or show success message
-      this.router.navigate(['/deploy-list']);
-    },
-    error: (error: { message: string; }) => {
-      console.error('Error starting deployment:', error);
-      // Handle error, show message to user
-      alert('Error starting deployment: ' + error.message);
+  // Call API based on selected regions
+  selectedRegions.forEach(regionObj => {
+    if (regionObj.label === 'UK') {
+      callDeployment('eu-west-2', this.profileNameUK);
+    }
+    if (regionObj.label === 'IS') {
+      callDeployment('eu-west-1', this.profileNameIS);
     }
   });
 }

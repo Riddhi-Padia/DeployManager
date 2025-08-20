@@ -16,28 +16,18 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 interface DeploymentPipeline {
-  id: string;
-  name: string;
+  executionID: string;
   status: 'In progress' | 'Success' | 'Failed' | 'Cancelled' | 'Pending';
   sourceRevisions: string;
-  executionStarted: string;
-}
-
-interface ExecutionStatus {
-  status: 'success' | 'failed' | 'cancelled' | 'in-progress' | 'pending';
-  tooltip: string;
+  trigger: string;
+  started: string;
+  Duration: string;
+  Completed: string;
 }
 
 interface TableColumn {
   columnDef: string;
   header: string;
-  sortable: boolean;
-}
-
-interface StatusFilter {
-  value: string;
-  label: string;
-  checked: boolean;
 }
 
 @Component({
@@ -46,9 +36,9 @@ interface StatusFilter {
     CommonModule,
     FormsModule,
     MatButtonModule,
-    MatIconModule,MatFormFieldModule, MatPaginatorModule,
+    MatIconModule, MatFormFieldModule, MatPaginatorModule,
     MatChipsModule,
-    MatTableModule,MatInputModule,
+    MatTableModule, MatInputModule,
     MatCheckboxModule,
     MatMenuModule,
     MatProgressSpinnerModule,
@@ -58,30 +48,35 @@ interface StatusFilter {
   styleUrls: ['./deploy-list.component.css']
 })
 export class DeployListComponent implements OnInit {
-  dataSource: DeploymentPipeline[] = [];
-  filteredDataSource = new MatTableDataSource<DeploymentPipeline>([]);
-  displayedColumns: string[] = ['name', 'status', 'sourceRevisions', 'executionStarted'];
+  UKdataSource: DeploymentPipeline[] = [];
+  ISdataSource: DeploymentPipeline[] = [];
+  UKtabledDataSource = new MatTableDataSource<DeploymentPipeline>([]);
+  IStabledDataSource = new MatTableDataSource<DeploymentPipeline>([]);
+  displayedColumns: string[] = [
+    'executionID',
+    'status',
+    'sourceRevisions',
+    'trigger',
+    'started',
+    'Duration',
+    'Completed'
+  ];
   isLoading = false;
 
   columns: TableColumn[] = [
-    { columnDef: 'name', header: 'Name', sortable: true },
-    { columnDef: 'status', header: 'Latest execution status', sortable: true },
-    { columnDef: 'sourceRevisions', header: 'Latest source revisions', sortable: false },
-    { columnDef: 'executionStarted', header: 'Latest execution started', sortable: true },
+    { columnDef: 'id', header: 'Execution ID' },
+    { columnDef: 'status', header: 'Status' },
+    { columnDef: 'sourceRevisions', header: 'Source Revisions' },
+    { columnDef: 'trigger', header: 'Trigger' },
+    { columnDef: 'started', header: 'Started' },
+    { columnDef: 'duration', header: 'Duration' },
+    { columnDef: 'completed', header: 'Completed' }
   ];
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
     this.loadDeployments();
-  }
-
-  ngAfterViewInit() {
-    this.filteredDataSource.paginator = this.paginator;
-    this.filteredDataSource.sort = this.sort;
   }
 
   // Load deployment data (simulated)
@@ -90,61 +85,106 @@ export class DeployListComponent implements OnInit {
 
     // Simulate API call
     setTimeout(() => {
-      this.dataSource = [
+      //api call to fetch data
+      this.UKdataSource = [
         {
-          id: '1',
-          name: 'emspuk-infra-single-pipeline',
-          status: 'Success',
-          sourceRevisions: '-',
-          executionStarted: 'Just now'
-        },
-        {
-          id: '2',
-          name: 'backend-api-deployment',
+          executionID: 'UK-001',
           status: 'Success',
           sourceRevisions: 'v2.1.0',
-          executionStarted: '2 hours ago',
+          trigger: 'Manual',
+          started: 'Just now',
+          Duration: '2m 10s',
+          Completed: 'Just now'
         },
         {
-          id: '3',
-          name: 'frontend-ui-pipeline',
+          executionID: 'IS-002',
+          status: 'Success',
+          sourceRevisions: 'v2.1.0',
+          trigger: 'Manual',
+          started: 'Just now',
+          Duration: '2m 12s',
+          Completed: 'Just now'
+        },
+        {
+          executionID: 'UK-003',
           status: 'Failed',
           sourceRevisions: 'main@a4b8c9d',
-          executionStarted: '1 day ago',
+          trigger: 'Schedule',
+          started: '1 day ago',
+          Duration: '1m 45s',
+          Completed: '1 day ago'
         },
         {
-          id: '4',
-          name: 'database-migration-pipeline',
-          status: 'Success',
+          executionID: 'IS-004',
+          status: 'Cancelled',
           sourceRevisions: 'release/v1.5.2',
-          executionStarted: '3 hours ago',
+          trigger: 'Manual',
+          started: '3 hours ago',
+          Duration: '0m 30s',
+          Completed: '3 hours ago'
         },
         {
-          id: '5',
-          name: 'mobile-app-deployment',
-          status: 'Cancelled',
+          executionID: 'UK-005',
+          status: 'In progress',
           sourceRevisions: 'feature/new-ui',
-          executionStarted: '5 hours ago',
-        },
-        {
-          id: '6',
-          name: 'mobile-app-deployment',
-          status: 'Cancelled',
-          sourceRevisions: 'feature/new-ui',
-          executionStarted: '5 hours ago',
-        },
-        {
-          id: '7',
-          name: 'mobile-app-deployment',
-          status: 'Cancelled',
-          sourceRevisions: 'feature/new-ui',
-          executionStarted: '5 hours ago',
+          trigger: 'Manual',
+          started: '5 minutes ago',
+          Duration: '0m 50s',
+          Completed: '-'
         }
       ];
-
-      this.filteredDataSource.data = this.dataSource;
+      this.UKtabledDataSource.data = this.UKdataSource;
+      this.ISdataSource = [
+        {
+          executionID: 'UK-001',
+          status: 'Success',
+          sourceRevisions: 'v2.1.0',
+          trigger: 'Manual',
+          started: 'Just now',
+          Duration: '2m 10s',
+          Completed: 'Just now'
+        },
+        {
+          executionID: 'IS-002',
+          status: 'Success',
+          sourceRevisions: 'v2.1.0',
+          trigger: 'Manual',
+          started: 'Just now',
+          Duration: '2m 12s',
+          Completed: 'Just now'
+        },
+        {
+          executionID: 'UK-003',
+          status: 'Failed',
+          sourceRevisions: 'main@a4b8c9d',
+          trigger: 'Schedule',
+          started: '1 day ago',
+          Duration: '1m 45s',
+          Completed: '1 day ago'
+        },
+        {
+          executionID: 'IS-004',
+          status: 'Cancelled',
+          sourceRevisions: 'release/v1.5.2',
+          trigger: 'Manual',
+          started: '3 hours ago',
+          Duration: '0m 30s',
+          Completed: '3 hours ago'
+        },
+        {
+          executionID: 'UK-005',
+          status: 'In progress',
+          sourceRevisions: 'feature/new-ui',
+          trigger: 'Manual',
+          started: '5 minutes ago',
+          Duration: '0m 50s',
+          Completed: '-'
+        }
+      ];
+      this.IStabledDataSource.data = this.ISdataSource;
       this.isLoading = false;
-    }, 1500);
+    }, 1200);
+    // }, 120000);
   }
 
   // Add new deployment
@@ -155,10 +195,8 @@ export class DeployListComponent implements OnInit {
 
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.filteredDataSource.filter = filterValue.trim().toLowerCase();
-    if (this.filteredDataSource.paginator) {
-      this.filteredDataSource.paginator.firstPage();
-    }
+    this.UKtabledDataSource.filter = filterValue.trim().toLowerCase();
+    this.IStabledDataSource.filter = filterValue.trim().toLowerCase();
   }
 
   getStatusClass(status: string): string {
@@ -183,15 +221,9 @@ export class DeployListComponent implements OnInit {
     return iconMap[status] || 'help';
   }
 
-  getExecutionIcon(status: string): string {
-    const iconMap: { [key: string]: string } = {
-      'success': 'check_circle',
-      'failed': 'error',
-      'cancelled': 'cancel',
-      'in-progress': 'refresh',
-      'pending': 'schedule'
-    };
-    return iconMap[status] || 'help';
+  showDetails(executionID: string): void {
+    //call API to get details for the execution ID
+    console.log(`Showing details for execution ID: ${executionID}`);
   }
 
   formatTime(time: string): string {

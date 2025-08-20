@@ -1,8 +1,7 @@
 mat-drawer-content{
-    margin: 20px;
     height: calc(100vh - 150px);
     border-radius: 20px;
-    padding: 7px 15px;
+    padding: 0px 15px;
 }
 
 mat-drawer{

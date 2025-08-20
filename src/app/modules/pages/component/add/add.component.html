@@ -69,9 +69,13 @@
       <div class="mt-3">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Access Key ID</mat-label>
-          <input matInput placeholder="Enter your AWS Access Key ID" [(ngModel)]="KeyId" name="keyId" required
+          <input matInput [type]="hideAccessKey ? 'password' : 'text'" placeholder="Enter your AWS Access Key ID" [(ngModel)]="KeyId" name="keyId" required
             #keyIdInput="ngModel">
           <mat-icon matPrefix>vpn_key</mat-icon>
+          <button mat-icon-button matSuffix (click)="hideAccessKey = !hideAccessKey" [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hideAccessKey" type="button">
+            <mat-icon>{{hideAccessKey ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
           <mat-error *ngIf="keyIdInput.invalid && keyIdInput.touched">
             Access Key ID is required
           </mat-error>
@@ -93,9 +97,13 @@
 
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Session Token</mat-label>
-          <textarea matInput placeholder="Enter your AWS Session Token (optional)" [(ngModel)]="SessionToken"
-            name="sessionToken" rows="2" #sessionTokenInput="ngModel"></textarea>
+          <input matInput [type]="hideSessionToken ? 'password' : 'text'" placeholder="Enter your AWS Session Token (optional)" [(ngModel)]="SessionToken"
+            name="sessionToken" rows="2" #sessionTokenInput="ngModel" />
           <mat-icon matPrefix>token</mat-icon>
+          <button mat-icon-button matSuffix (click)="hideSessionToken = !hideSessionToken" [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hideSessionToken" type="button">
+            <mat-icon>{{hideSessionToken ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
           <mat-error *ngIf="sessionTokenInput.invalid && sessionTokenInput.touched">
             Session Token is required
           </mat-error>

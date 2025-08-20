@@ -1,7 +1,6 @@
 /* Page header */
 .page-header {
-  margin-bottom: 20px;
-  padding: 24px 0px;
+  padding: 16px 0px;
   color: #3a3a3a;
 }
 
@@ -10,7 +9,6 @@
   align-items: center;
   gap: 12px;
   font-size: 28px;
-  margin: 0 0 8px 0;
 }
 
 .title-icon {
@@ -23,6 +21,11 @@
 .add-deployment-btn {
   color: black;
   border-radius: 8px;
+}
+
+.load-deployment-btn{
+  box-shadow: none !important;
+  background-color: white !important;
 }
 
 /* Spinning animation for refresh */

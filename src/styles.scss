@@ -37,3 +37,8 @@ body {
       density: 0,
     ));
 }
+/* to hide the default eye for password */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
