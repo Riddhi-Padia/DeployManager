@@ -14,7 +14,7 @@ export class AuthService {
       if(credentials.username === 'admin' && credentials.password === 'admin123')
       {
         this.authState.next(true);
-        localStorage.setItem('token','safksjfgsdfjsdfbsodifusdhf-34fkjsfsd87f@2');
+        localStorage.setItem('logintoken','safksjfgsdfjsdfbsodifusdhf-34fkjsfsd87f@2');
         return of(true);
       }
       else{
@@ -23,13 +23,13 @@ export class AuthService {
     }
 
     private checkAuthStatus(): boolean{
-      return !!localStorage.getItem('token');
+      return !!localStorage.getItem('logintoken');
     }
 
     // method to logout the user
     logout(): void {
       this.authState.next(false);
-      localStorage.removeItem('token');
+      localStorage.removeItem('logintoken');
     }
 
     // method to autheticate the user

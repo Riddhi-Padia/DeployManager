@@ -14,16 +14,8 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-
-interface DeploymentPipeline {
-  executionID: string;
-  status: 'In progress' | 'Success' | 'Failed' | 'Cancelled' | 'Pending';
-  sourceRevisions: string;
-  trigger: string;
-  started: string;
-  Duration: string;
-  Completed: string;
-}
+import { DeployService } from '../../services/deploy.service';
+import { DeploymentPipeline } from '../../models/DeploymentPipeline';
 
 interface TableColumn {
   columnDef: string;
@@ -48,32 +40,31 @@ interface TableColumn {
   styleUrls: ['./deploy-list.component.css']
 })
 export class DeployListComponent implements OnInit {
-  UKdataSource: DeploymentPipeline[] = [];
-  ISdataSource: DeploymentPipeline[] = [];
   UKtabledDataSource = new MatTableDataSource<DeploymentPipeline>([]);
   IStabledDataSource = new MatTableDataSource<DeploymentPipeline>([]);
   displayedColumns: string[] = [
-    'executionID',
+    'executionId',
     'status',
-    'sourceRevisions',
+    'sourceAction',
     'trigger',
     'started',
-    'Duration',
-    'Completed'
+    'duration',
+    'completed'
   ];
+
   isLoading = false;
 
   columns: TableColumn[] = [
-    { columnDef: 'id', header: 'Execution ID' },
+    { columnDef: 'executionId', header: 'Execution ID' },
     { columnDef: 'status', header: 'Status' },
-    { columnDef: 'sourceRevisions', header: 'Source Revisions' },
+    { columnDef: 'sourceAction', header: 'Source Revisions' },
     { columnDef: 'trigger', header: 'Trigger' },
     { columnDef: 'started', header: 'Started' },
     { columnDef: 'duration', header: 'Duration' },
     { columnDef: 'completed', header: 'Completed' }
   ];
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private deployService: DeployService) { }
 
   ngOnInit(): void {
     this.loadDeployments();
@@ -86,102 +77,42 @@ export class DeployListComponent implements OnInit {
     // Simulate API call
     setTimeout(() => {
       //api call to fetch data
-      this.UKdataSource = [
-        {
-          executionID: 'UK-001',
-          status: 'Success',
-          sourceRevisions: 'v2.1.0',
-          trigger: 'Manual',
-          started: 'Just now',
-          Duration: '2m 10s',
-          Completed: 'Just now'
-        },
-        {
-          executionID: 'IS-002',
-          status: 'Success',
-          sourceRevisions: 'v2.1.0',
-          trigger: 'Manual',
-          started: 'Just now',
-          Duration: '2m 12s',
-          Completed: 'Just now'
-        },
-        {
-          executionID: 'UK-003',
-          status: 'Failed',
-          sourceRevisions: 'main@a4b8c9d',
-          trigger: 'Schedule',
-          started: '1 day ago',
-          Duration: '1m 45s',
-          Completed: '1 day ago'
-        },
-        {
-          executionID: 'IS-004',
-          status: 'Cancelled',
-          sourceRevisions: 'release/v1.5.2',
-          trigger: 'Manual',
-          started: '3 hours ago',
-          Duration: '0m 30s',
-          Completed: '3 hours ago'
-        },
-        {
-          executionID: 'UK-005',
-          status: 'In progress',
-          sourceRevisions: 'feature/new-ui',
-          trigger: 'Manual',
-          started: '5 minutes ago',
-          Duration: '0m 50s',
-          Completed: '-'
+      const accesskey = this.deployService.getAccessKey();
+      const secretkey = this.deployService.getSecretKey();
+      const sessionToken = this.deployService.getSessionToken();
+      const projectNameUK = this.deployService.getProjectName('UK');
+      const projectNameIS = this.deployService.getProjectName('IS');
+      // const JsonUK = {
+      //   access_key_id: accesskey,
+      //   secret_access_key: secretkey,
+      //   region: "eu-west-2",
+      //   session_token: sessionToken,
+      //   pipeline_name: projectNameUK
+      // };
+      const JsonUK = {
+        access_key_id: accesskey,
+        secret_access_key: secretkey,
+        region: "eu-north-1",
+        session_token: "",
+        pipeline_name: "RustHelloPipeline"
+      };
+      const JsonIS = {
+        access_key_id: accesskey,
+        secret_access_key: secretkey,
+        region: "eu-west-1",
+        session_token: sessionToken,
+        pipeline_name: projectNameIS
+      };
+      this.deployService.getDeployments(JsonUK).subscribe({
+        next: (data: DeploymentPipeline[]) => {
+          this.UKtabledDataSource.data = data;
         }
-      ];
-      this.UKtabledDataSource.data = this.UKdataSource;
-      this.ISdataSource = [
-        {
-          executionID: 'UK-001',
-          status: 'Success',
-          sourceRevisions: 'v2.1.0',
-          trigger: 'Manual',
-          started: 'Just now',
-          Duration: '2m 10s',
-          Completed: 'Just now'
-        },
-        {
-          executionID: 'IS-002',
-          status: 'Success',
-          sourceRevisions: 'v2.1.0',
-          trigger: 'Manual',
-          started: 'Just now',
-          Duration: '2m 12s',
-          Completed: 'Just now'
-        },
-        {
-          executionID: 'UK-003',
-          status: 'Failed',
-          sourceRevisions: 'main@a4b8c9d',
-          trigger: 'Schedule',
-          started: '1 day ago',
-          Duration: '1m 45s',
-          Completed: '1 day ago'
-        },
-        {
-          executionID: 'IS-004',
-          status: 'Cancelled',
-          sourceRevisions: 'release/v1.5.2',
-          trigger: 'Manual',
-          started: '3 hours ago',
-          Duration: '0m 30s',
-          Completed: '3 hours ago'
-        },
-        {
-          executionID: 'UK-005',
-          status: 'In progress',
-          sourceRevisions: 'feature/new-ui',
-          trigger: 'Manual',
-          started: '5 minutes ago',
-          Duration: '0m 50s',
-          Completed: '-'
+      });
+      this.deployService.getDeployments(JsonIS).subscribe({
+        next: (data: DeploymentPipeline[]) => {
+          this.IStabledDataSource.data = data;
         }
-      ];
-      this.IStabledDataSource.data = this.ISdataSource;
+      });
       this.isLoading = false;
     }, 1200);
     // }, 120000);
@@ -204,7 +135,7 @@ export class DeployListComponent implements OnInit {
       'In progress': 'status-in-progress',
       'Success': 'status-success',
       'Failed': 'status-failed',
-      'Cancelled': 'status-cancelled',
+      'Cancelled': 'status-stopped',
       'Pending': 'status-pending'
     };
     return statusMap[status] || 'status-default';
@@ -224,13 +155,5 @@ export class DeployListComponent implements OnInit {
   showDetails(executionID: string): void {
     //call API to get details for the execution ID
     console.log(`Showing details for execution ID: ${executionID}`);
-  }
-
-  formatTime(time: string): string {
-    if (!time) return '-';
-    if (time.includes('ago') || time === 'Just now') {
-      return time;
-    }
-    return time;
   }
 }

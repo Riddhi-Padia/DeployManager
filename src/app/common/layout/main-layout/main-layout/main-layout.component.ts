@@ -1,7 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { HeaderComponent } from '../../header/header/header.component';
 import { MatDrawer, MatDrawerContainer, MatDrawerContent } from '@angular/material/sidenav';
-import { FooterComponent } from '../../footer/footer/footer.component';
 import { SidebarComponent } from '../../sidebar/sidebar/sidebar.component';
 
 @Component({
@@ -11,7 +10,6 @@ import { SidebarComponent } from '../../sidebar/sidebar/sidebar.component';
     MatDrawerContainer,
     MatDrawer,
     MatDrawerContent,
-    FooterComponent,
     SidebarComponent
 ],
   templateUrl: './main-layout.component.html',

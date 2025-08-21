@@ -33,7 +33,10 @@ import { DeployService } from '../../services/deploy.service';
   styleUrls: ['./add.component.css'],
 })
 export class AddDeploymentComponent {
-  constructor(private router: Router, private deployService : DeployService){}
+  constructor(private router: Router, private deployService : DeployService){
+    this.profileNameIS = this.deployService.getProjectName('IS');
+    this.profileNameUK = this.deployService.getProjectName('UK');
+  }
 
   // Deployment options checkboxes
   deploymentFields = [
@@ -103,8 +106,8 @@ export class AddDeploymentComponent {
   KeyId: string = '';
   SecretKey: string = '';
   SessionToken: string = '';
-  profileNameUK: string = 'emspuk-infra-dynamic-pipeline';
-  profileNameIS: string = 'emspis-infra-dynamic-pipeline';
+  profileNameUK: string;
+  profileNameIS: string;
 
   // Form state
   hideAccessKey: boolean = true;
@@ -205,6 +208,9 @@ export class AddDeploymentComponent {
         console.log(`Deployment started successfully for ${projectName}:`, response);
         // Navigate only after both calls if both selected
         if (selectedRegions.length === 1 || region === selectedRegions[selectedRegions.length - 1].name) {
+          localStorage.setItem('AccessKey', this.KeyId);
+          localStorage.setItem('SecretKey', this.SecretKey);
+          localStorage.setItem('SessionToken', this.SessionToken);
           this.router.navigate(['/deploy-list']);
         }
       },
@@ -213,9 +219,6 @@ export class AddDeploymentComponent {
         alert('Error starting deployment: ' + error.message);
       }
     });
-    localStorage.setItem('AccessKey', this.KeyId);
-    localStorage.setItem('SecretKey', this.SecretKey);
-    localStorage.setItem('SessionToken', this.SessionToken);
   };
 
   // Call API based on selected regions
