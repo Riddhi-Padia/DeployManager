@@ -30,8 +30,8 @@ body {
   font-family: Roboto, 'Helvetica Neue', sans-serif;
   margin: 0;
   @include mat.theme((color: (theme-type: light,
-        primary: mat.$red-palette,
-        tertiary: mat.$red-palette,
+        primary: mat.$orange-palette,
+        tertiary: mat.$orange-palette,
       ),
       typography: Roboto,
       density: 0,

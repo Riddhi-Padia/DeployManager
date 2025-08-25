@@ -1,11 +1,14 @@
 mat-card{
+  margin-top: 15px;
   background-color: white !important;
-  border: none;
+  border: 1px solid lightgray;
   box-shadow: none;
+  border-radius: 0px;
 }
+
 /* Header styling */
 .form-header {
-  color: #3a3a3a;
+  color: #161D26;
   padding: 24px;
 }
 
@@ -25,8 +28,8 @@ mat-card{
 }
 
 .checkbox:hover {
-  background: #ff65650e;
-  border-color: #ff6565;
+  background: #F2F3F3;
+  border-color: grey;
 }
 
 /* Form fields */
@@ -45,49 +48,30 @@ mat-select-trigger {
 }
 
 /* Action buttons */
-.form-actions {
-  padding: 24px 32px;
-  background: #f8f9ff;
-  border-top: 1px solid #e0e0e0;
+.form-actions{
+  font-size: 20px;
   display: flex;
-  gap: 16px;
-  justify-content: flex-end;
-  border-radius: 0 0 12px 12px;
+  align-items: center;
+  justify-content: start ;
+  gap: 1rem;
 }
 
 .deploy-button {
   font-size: 16px;
   padding: 12px 32px;
-  border-radius: 25px;
+  border-radius: 3px !important;
+  background-color: #FF9900 !important;
+  color: black !important;
   transition: all 0.3s ease;
-}
-
-.deploy-button:hover:not(:disabled) {
-  transform: translateY(-2px);
 }
 
 .deploy-button:disabled {
-  background: #cccccc;
-  box-shadow: none;
-}
-
-.preview-button {
-  border-radius: 25px;
-  border: 2px solid #667eea;
-  color: #667eea;
-  font-weight: 500;
-  padding: 10px 24px;
-  transition: all 0.3s ease;
-}
-
-.preview-button:hover {
-  background: #667eea;
-  color: white;
-  transform: translateY(-1px);
+  background: #cccccc !important;
+  box-shadow: none !important;
 }
 
 .reset-button {
-  color: #757575;
+  color: #757575 !important;
   border-radius: 25px;
   padding: 10px 24px;
   transition: all 0.3s ease;
@@ -96,15 +80,6 @@ mat-select-trigger {
 .reset-button:hover {
   background: #f5f5f5;
   color: #424242;
-}
-
-/* Button icons */
-.form-actions{
-  margin-right: 8px;
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: end ;
 }
 
 /* Responsive design */

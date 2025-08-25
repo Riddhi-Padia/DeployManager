@@ -226,13 +226,10 @@ export class AddDeploymentComponent {
       this.deployService.addDeployment(finalJson).subscribe({
         next: (response: any) => {
           console.log(`Deployment started successfully for ${projectName}:`, response);
-          // Navigate only after both calls if both selected
-          if (selectedRegions.length === 1 || region === selectedRegions[selectedRegions.length - 1].name) {
             localStorage.setItem('AccessKey', this.KeyId);
             localStorage.setItem('SecretKey', this.SecretKey);
             localStorage.setItem('SessionToken', this.SessionToken);
             this.router.navigate(['/deploy-list']);
-          }
         },
         error: (error: { message: string }) => {
           console.error(`Error starting deployment for ${projectName}:`, error);

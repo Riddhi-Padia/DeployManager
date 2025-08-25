@@ -4,12 +4,10 @@ mat-list-item a{
 }
 
 mat-list-item.active .mat-mdc-list-item-title{
-    color:#ff6565 !important;
+    color:#FF9900 !important;
     font-weight: bold;
-}
-
-mat-list-item:hover{
-    background-color: #ff65651f;
+    font-size: 18px;
+    letter-spacing: 1px;
 }
 
 mat-list-item:focus::before{

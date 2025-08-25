@@ -118,18 +118,19 @@
           </mat-error>
         </mat-form-field>
       </div>
-    </mat-card-content>
+      <span class="text-muted">Ensure entering Region, Options and Credentials correctly.</span>
 
-    <!-- Action Buttons -->
-    <div class="form-actions">
-      <button mat-raised-button color="primary" type="submit" class="deploy-button" [disabled]="!isFormValid()">
-        <mat-icon>rocket_launch</mat-icon>
-        Deploy Now
-      </button>
-      <button mat-button type="button" class="reset-button" (click)="backbtn()">
-        <mat-icon>cancel</mat-icon>
-        Cancel
-      </button>
-    </div>
+      <!-- Action Buttons -->
+      <div class="form-actions pt-3">
+        <button mat-raised-button color="primary" type="submit" class="deploy-button" [disabled]="!isFormValid()">
+          <mat-icon>rocket_launch</mat-icon>
+          Deploy Now
+        </button>
+        <button mat-button type="button" class="reset-button" (click)="backbtn()">
+          <mat-icon>cancel</mat-icon>
+          Cancel
+        </button>
+      </div>
+    </mat-card-content>
   </form>
 </mat-card>

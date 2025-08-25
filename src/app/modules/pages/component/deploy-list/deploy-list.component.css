@@ -19,13 +19,17 @@
 
 /* Header actions */
 .add-deployment-btn {
-  color: black;
-  border-radius: 8px;
+  color: black !important;
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: 15px;
+  border-radius: 3px;
+  background-color: #FF9900 !important;
 }
 
 .load-deployment-btn{
   box-shadow: none !important;
-  background-color: white !important;
+  background-color: transparent !important;
 }
 
 /* Spinning animation for refresh */
@@ -50,7 +54,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 10000000;
+  z-index: 1000;
   gap: 16px;
 }
 
@@ -58,6 +62,15 @@
   margin: 0;
   font-size: 16px;
   color: #666;
+}
+
+/* table styles */
+table{
+  background-color: white !important;
+}
+
+.no-background{
+  background-color: transparent;
 }
 
 /* Recent Executions Column Styles */

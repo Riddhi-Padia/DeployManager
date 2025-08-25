@@ -65,7 +65,6 @@ export class DeployService {
         if (!response || !Array.isArray(response.history)) {
           return [];
         }
-
         return response.history.map((item: any) => {
           const start = new Date(item.startTime);
           const end = new Date(item.lastUpdateTime);
