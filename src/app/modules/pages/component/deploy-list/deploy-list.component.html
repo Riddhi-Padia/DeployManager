@@ -179,4 +179,10 @@
       </table>
     </div>
   </div>
+
+    <!-- Loading Overlay -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading deployments...</p>
+  </div>
 </div>

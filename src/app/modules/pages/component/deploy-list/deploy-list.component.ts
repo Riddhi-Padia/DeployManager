@@ -10,8 +10,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { DeployService } from '../../services/deploy.service';
@@ -28,7 +26,7 @@ interface TableColumn {
     CommonModule,
     FormsModule,
     MatButtonModule,
-    MatIconModule, MatFormFieldModule, MatPaginatorModule,
+    MatIconModule, MatFormFieldModule,
     MatChipsModule,
     MatTableModule, MatInputModule,
     MatCheckboxModule,
@@ -89,13 +87,6 @@ export class DeployListComponent implements OnInit {
         session_token: sessionToken,
         pipeline_name: pipelineUK
       };
-      // const JsonUK = {
-      //   access_key_id: accesskey,
-      //   secret_access_key: secretkey,
-      //   region: "eu-west-1",
-      //   session_token: "",
-      //   pipeline_name: "RustHelloPipeline"
-      // };
       const JsonIS = {
         access_key_id: accesskey,
         secret_access_key: secretkey,
@@ -114,8 +105,7 @@ export class DeployListComponent implements OnInit {
         }
       });
       this.isLoading = false;
-    }, 1200);
-    // }, 120000);
+    }, 5000);
   }
 
   // Add new deployment

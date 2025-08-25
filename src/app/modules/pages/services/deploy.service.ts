@@ -62,6 +62,7 @@ export class DeployService {
     console.log("calling on", `${this.apiUrl}/pipeline-history`);
     return this.http.post<any>(`${this.apiUrl}/pipeline-history`, payload).pipe(
       map(response => {
+        console.log(response);
         if (!response || !Array.isArray(response.history)) {
           return [];
         }
