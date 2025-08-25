@@ -33,7 +33,7 @@ import { DeployService } from '../../services/deploy.service';
   styleUrls: ['./add.component.css'],
 })
 export class AddDeploymentComponent {
-  constructor(private router: Router, private deployService : DeployService){
+  constructor(private router: Router, private deployService: DeployService) {
     this.profileNameIS = this.deployService.getProjectName('IS');
     this.profileNameUK = this.deployService.getProjectName('UK');
   }
@@ -86,6 +86,8 @@ export class AddDeploymentComponent {
     'drivers/schedulers-queues',
   ];
 
+  ALL_LAMBDA_VALUE = true;
+
   selectedLambdas: string[] = [];
 
   // Scripts options
@@ -98,7 +100,7 @@ export class AddDeploymentComponent {
 
   //regions
   regions = [
-    { label:'UK',  name: 'eu-west-2', selected: false },
+    { label: 'UK', name: 'eu-west-2', selected: false },
     { label: 'IS', name: 'eu-west-1', selected: false },
   ];
   selectedRegions: string[] = [];
@@ -126,111 +128,129 @@ export class AddDeploymentComponent {
     this.router.navigate(['/deploy-list']);
   }
 
+  toggleAllLambdas(): void {
+    if (this.isAllSelected()) {
+      // Deselect all
+      this.selectedLambdas = [];
+    } else {
+      // Select all (spread operator to copy array)
+      this.selectedLambdas = [...this.lambdaOptions];
+    }
+    console.log("1. ",this.selectedLambdas);
+  }
+
+  isAllSelected(): boolean {
+  return (
+    this.lambdaOptions.length > 0 &&
+    this.lambdaOptions.every(v => this.selectedLambdas.includes(v))
+  );
+}
+
   // Handle form submission
   submitForm() {
-  // Get selected regions
-  const selectedRegions = this.regions.filter(r => r.selected);
+    // Get selected regions
+    const selectedRegions = this.regions.filter(r => r.selected);
 
-  // Prepare environment variables (same for both calls)
-  const environmentVariables: { name: string; value: string }[] = [];
+    // Prepare environment variables (same for both calls)
+    const environmentVariables: { name: string; value: string }[] = [];
 
-  // Add deployment fields
-  this.deploymentFields.forEach(field => {
-    if (field.name === 'DEPLOY_WEBPAY') {
-      environmentVariables.push({
-        name: field.name + '_UI',
-        value: field.selected ? 'yes' : 'no',
-      });
-      environmentVariables.push({
-        name: field.name + '_LAMBDA',
-        value: field.selected ? 'yes' : 'no',
-      });
-    } else {
+    // Add deployment fields
+    this.deploymentFields.forEach(field => {
+      if (field.name === 'DEPLOY_WEBPAY') {
+        environmentVariables.push({
+          name: field.name + '_UI',
+          value: field.selected ? 'yes' : 'no',
+        });
+        environmentVariables.push({
+          name: field.name + '_LAMBDA',
+          value: field.selected ? 'yes' : 'no',
+        });
+      } else {
+        environmentVariables.push({
+          name: field.name,
+          value: field.selected ? 'yes' : 'no',
+        });
+      }
+    });
+
+    // Add default deployment fields
+    this.defaultDeploymentFields.forEach(field => {
       environmentVariables.push({
         name: field.name,
         value: field.selected ? 'yes' : 'no',
       });
-    }
-  });
-
-  // Add default deployment fields
-  this.defaultDeploymentFields.forEach(field => {
-    environmentVariables.push({
-      name: field.name,
-      value: field.selected ? 'yes' : 'no',
     });
-  });
 
-  // Add automation version if provided
-  environmentVariables.push({
-    name: 'AutomationVersion',
-    value: '',
-  });
-
-  // Add lambda selection
-  const lambdaValue =
-    this.selectedLambdas.length <= 0 ? '' : this.selectedLambdas.join(', ');
-  environmentVariables.push({
-    name: 'LAMBDA_TO_DEPLOY',
-    value: this.deploymentFields.find(f => f.label === 'Backend' && f.selected)
-      ? lambdaValue
-      : '',
-  });
-
-  // Add scripts if any are selected
-  const selectedScripts = Object.keys(this.scripts).filter(
-    script => this.scripts[script]
-  );
-  if (selectedScripts.length > 0) {
+    // Add automation version if provided
     environmentVariables.push({
-      name: 'SCRIPTS',
-      value: this.deploymentFields.find(f => f.label === 'Database' && f.selected)
-        ? selectedScripts.join(',')
+      name: 'AutomationVersion',
+      value: '',
+    });
+
+    // Add lambda selection
+    const lambdaValue =
+      this.selectedLambdas.length <= 0 ? '' : this.selectedLambdas.join(', ');
+    environmentVariables.push({
+      name: 'LAMBDA_TO_DEPLOY',
+      value: this.deploymentFields.find(f => f.label === 'Backend' && f.selected)
+        ? lambdaValue
         : '',
     });
-  }
 
-  // Helper to call API for a region/profile
-  const callDeployment = (region: string, projectName: string) => {
-    const finalJson = {
-      access_key_id: this.KeyId,
-      secret_access_key: this.SecretKey,
-      region,
-      session_token: this.SessionToken,
-      project_name: projectName,
-      environment_variables: environmentVariables,
+    // Add scripts if any are selected
+    const selectedScripts = Object.keys(this.scripts).filter(
+      script => this.scripts[script]
+    );
+    if (selectedScripts.length > 0) {
+      environmentVariables.push({
+        name: 'SCRIPTS',
+        value: this.deploymentFields.find(f => f.label === 'Database' && f.selected)
+          ? selectedScripts.join(',')
+          : '',
+      });
+    }
+
+    // Helper to call API for a region/profile
+    const callDeployment = (region: string, projectName: string) => {
+      const finalJson = {
+        access_key_id: this.KeyId,
+        secret_access_key: this.SecretKey,
+        region,
+        session_token: this.SessionToken,
+        project_name: projectName,
+        environment_variables: environmentVariables,
+      };
+
+      console.log('Final JSON:', JSON.stringify(finalJson, null, 2));
+
+      this.deployService.addDeployment(finalJson).subscribe({
+        next: (response: any) => {
+          console.log(`Deployment started successfully for ${projectName}:`, response);
+          // Navigate only after both calls if both selected
+          if (selectedRegions.length === 1 || region === selectedRegions[selectedRegions.length - 1].name) {
+            localStorage.setItem('AccessKey', this.KeyId);
+            localStorage.setItem('SecretKey', this.SecretKey);
+            localStorage.setItem('SessionToken', this.SessionToken);
+            this.router.navigate(['/deploy-list']);
+          }
+        },
+        error: (error: { message: string }) => {
+          console.error(`Error starting deployment for ${projectName}:`, error);
+          alert('Error starting deployment: ' + error.message);
+        }
+      });
     };
 
-    console.log('Final JSON:', JSON.stringify(finalJson, null, 2));
-
-    this.deployService.addDeployment(finalJson).subscribe({
-      next: (response: any) => {
-        console.log(`Deployment started successfully for ${projectName}:`, response);
-        // Navigate only after both calls if both selected
-        if (selectedRegions.length === 1 || region === selectedRegions[selectedRegions.length - 1].name) {
-          localStorage.setItem('AccessKey', this.KeyId);
-          localStorage.setItem('SecretKey', this.SecretKey);
-          localStorage.setItem('SessionToken', this.SessionToken);
-          this.router.navigate(['/deploy-list']);
-        }
-      },
-      error: (error: { message: string }) => {
-        console.error(`Error starting deployment for ${projectName}:`, error);
-        alert('Error starting deployment: ' + error.message);
+    // Call API based on selected regions
+    selectedRegions.forEach(regionObj => {
+      if (regionObj.label === 'UK') {
+        callDeployment('eu-west-2', this.profileNameUK);
+      }
+      if (regionObj.label === 'IS') {
+        callDeployment('eu-west-1', this.profileNameIS);
       }
     });
-  };
-
-  // Call API based on selected regions
-  selectedRegions.forEach(regionObj => {
-    if (regionObj.label === 'UK') {
-      callDeployment('eu-west-2', this.profileNameUK);
-    }
-    if (regionObj.label === 'IS') {
-      callDeployment('eu-west-1', this.profileNameIS);
-    }
-  });
-}
+  }
 
   // Form validation helper
   isFormValid(): boolean {

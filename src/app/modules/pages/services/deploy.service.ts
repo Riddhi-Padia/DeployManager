@@ -14,8 +14,10 @@ export class DeployService {
   private accesskey: string = localStorage.getItem('AccessKey') || '';
   private secretkey: string = localStorage.getItem('SecretKey') || '';
   private sessionToken: string = localStorage.getItem('SessionToken') || '';
-  private projectNameUK: string = 'emspuk-infra-dynamic-pipeline';
-  private projectNameIS: string = 'emspis-infra-dynamic-pipeline';
+  private projectNameUK: string = 'emspuk-dev-dynamic-pipeline';
+  private projectNameIS: string = 'emspis-dev-dynamic-pipeline';
+  private pipelineUK: string = 'emspuk-dev-single-pipeline';
+  private pipelineIS: string = 'emspis-dev-single-pipeline';
 
   constructor(private http: HttpClient) { }
 
@@ -25,6 +27,15 @@ export class DeployService {
       return this.projectNameUK;
     else if (region == 'IS')
       return this.projectNameIS;
+    else
+      return '';
+  }
+
+  getPipelineName(region: string): string {
+    if (region == 'UK')
+      return this.pipelineUK;
+    else if (region == 'IS')
+      return this.pipelineIS;
     else
       return '';
   }
@@ -43,40 +54,18 @@ export class DeployService {
   // #endregion
 
   addDeployment(JSON: any): Observable<any> {
-    console.log("calling on", `${this.apiUrl}/start-pipeline`);
-    return this.http.post(`${this.apiUrl}/start-pipeline`, JSON);
+    console.log("calling on", `${this.apiUrl}/start-build`);
+    return this.http.post(`${this.apiUrl}/start-build`, JSON);
   }
 
-  // getDeployments(JSON: any): Observable<DeploymentPipeline[]> {
-  //   console.log("calling on", `${this.apiUrl}/pipeline-history`);
-  //   return this.http.post<any>(`${this.apiUrl}/pipeline-history`, JSON).pipe(
-  //   map(response => {
-  //     console.log("response", response);
-  //     if (!response || !Array.isArray(response.history)) return [];
-  //     return response.history.map((item: any) => ({
-  //       executionID: item.pipelineExecutionId,
-  //       status: item.status,
-  //       sourceRevisions: item.sourceRevisions?.[0]?.revisionSummary || '-',
-  //       trigger: item.trigger?.triggerType + " - " || '',
-  //       triggerURL: item.trigger?.triggerUrl || '',
-  //       started: item.startTime ? new Date(item.startTime).toLocaleString() : '-',
-  //       Duration: item.lastUpdateTime && item.startTime
-  //         ? this.getDuration(item.startTime, item.lastUpdateTime)
-  //         : '-',
-  //       Completed: item.lastUpdateTime ? new Date(item.lastUpdateTime).toLocaleString() : '-'
-  //     }));
-  //   })
-  // );
-  // }
-
   getDeployments(payload: any): Observable<DeploymentPipeline[]> {
+    console.log("calling on", `${this.apiUrl}/pipeline-history`);
     return this.http.post<any>(`${this.apiUrl}/pipeline-history`, payload).pipe(
       map(response => {
         if (!response || !Array.isArray(response.history)) {
           return [];
         }
 
-        console.log("response", response);
         return response.history.map((item: any) => {
           const start = new Date(item.startTime);
           const end = new Date(item.lastUpdateTime);

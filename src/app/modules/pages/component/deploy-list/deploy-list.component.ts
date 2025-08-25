@@ -80,28 +80,28 @@ export class DeployListComponent implements OnInit {
       const accesskey = this.deployService.getAccessKey();
       const secretkey = this.deployService.getSecretKey();
       const sessionToken = this.deployService.getSessionToken();
-      const projectNameUK = this.deployService.getProjectName('UK');
-      const projectNameIS = this.deployService.getProjectName('IS');
-      // const JsonUK = {
-      //   access_key_id: accesskey,
-      //   secret_access_key: secretkey,
-      //   region: "eu-west-2",
-      //   session_token: sessionToken,
-      //   pipeline_name: projectNameUK
-      // };
+      const pipelineUK = this.deployService.getPipelineName('UK');
+      const pipelineIS = this.deployService.getPipelineName('IS');
       const JsonUK = {
         access_key_id: accesskey,
         secret_access_key: secretkey,
-        region: "eu-north-1",
-        session_token: "",
-        pipeline_name: "RustHelloPipeline"
+        region: "eu-west-2",
+        session_token: sessionToken,
+        pipeline_name: pipelineUK
       };
+      // const JsonUK = {
+      //   access_key_id: accesskey,
+      //   secret_access_key: secretkey,
+      //   region: "eu-west-1",
+      //   session_token: "",
+      //   pipeline_name: "RustHelloPipeline"
+      // };
       const JsonIS = {
         access_key_id: accesskey,
         secret_access_key: secretkey,
         region: "eu-west-1",
         session_token: sessionToken,
-        pipeline_name: projectNameIS
+        pipeline_name: pipelineIS
       };
       this.deployService.getDeployments(JsonUK).subscribe({
         next: (data: DeploymentPipeline[]) => {
@@ -132,22 +132,26 @@ export class DeployListComponent implements OnInit {
 
   getStatusClass(status: string): string {
     const statusMap: { [key: string]: string } = {
-      'In progress': 'status-in-progress',
-      'Success': 'status-success',
+      'InProgress': 'status-in-progress',
+      'Succeeded': 'status-success',
       'Failed': 'status-failed',
       'Cancelled': 'status-stopped',
-      'Pending': 'status-pending'
+      'Stopped': 'status-stopped',
+      'Stopping': 'status-stopped',
+      'Superseded': 'status-pending'
     };
     return statusMap[status] || 'status-default';
   }
 
   getStatusIcon(status: string): string {
     const iconMap: { [key: string]: string } = {
-      'In progress': 'refresh',
-      'Success': 'check_circle',
+      'InProgress': 'refresh',
+      'Succeeded': 'check_circle',
       'Failed': 'error',
       'Cancelled': 'cancel',
-      'Pending': 'schedule'
+      'Stopped': 'cancel',
+      'Stopping': 'cancel',
+      'Superseded': 'schedule'
     };
     return iconMap[status] || 'help';
   }
